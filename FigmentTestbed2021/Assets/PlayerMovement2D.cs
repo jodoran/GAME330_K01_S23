@@ -7,11 +7,15 @@ public class PlayerMovement2D : MonoBehaviour
     public float _jumpHeight;
     public float _movementSpeed;
     public float _speedLimit;
-    public bool _grounded;
+    public float _cameraOffset;
+    bool _grounded;
 
+    public GameObject Camera;
     public Transform _respawnPoint;
 
     Rigidbody2D rb;
+    bool _collisionCheck;
+    float airtime = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -22,16 +26,23 @@ public class PlayerMovement2D : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float Horizontal = 0;
+        float horizontal = 0;
+        Vector2 offset = new Vector2(0,0);
 
         // Rotate the player by pressing left or right
         if (FigmentInput.GetButton(FigmentInput.FigmentButton.LeftButton))
         {
-            Horizontal = -_movementSpeed;
+            horizontal = -_movementSpeed;
+            offset = new Vector2(transform.localPosition.x - _cameraOffset, transform.localPosition.y + 2f);
         }
         else if (FigmentInput.GetButton(FigmentInput.FigmentButton.RightButton))
         {
-            Horizontal = _movementSpeed;
+            horizontal = _movementSpeed;
+            offset = new Vector2(transform.localPosition.x + _cameraOffset, transform.localPosition.y + 2f);
+        }
+        else
+        {
+            offset = new Vector2(transform.localPosition.x, transform.localPosition.y + 2f);
         }
 
         // If we press the action button, move forward
@@ -40,26 +51,78 @@ public class PlayerMovement2D : MonoBehaviour
             if (_grounded)
             {
                 rb.AddForce(Vector2.up * _jumpHeight);
+                _grounded = false;
+                airtime = 0;
+                rb.gravityScale = 1;
             }
         }
 
-        Vector2 velocity = new Vector2 (Horizontal, 0);
+        Vector2 velocity = new Vector2 (horizontal, 0);
 
         if(Mathf.Abs(rb.velocity.x) < _speedLimit)
         {
             rb.AddForce(velocity * Time.deltaTime);
         }
-        
+
+        if(!_grounded)
+        {
+            airtime += Time.deltaTime;
+            rb.gravityScale += Time.deltaTime / 2;
+        }
+        else
+        {
+            airtime = 0;
+            rb.gravityScale = 1;
+        }
+
+        if (!_grounded && rb.velocity.y > 0)
+        {
+            offset = new Vector2(offset.x, transform.localPosition.y + _cameraOffset);
+        }
+        else if (!_grounded && rb.velocity.y < 0)
+        {
+            offset = new Vector2(offset.x, transform.localPosition.y - _cameraOffset * airtime);
+            airtime += Time.deltaTime;
+        }
+
+        Camera.transform.localPosition = Vector2.Lerp(Camera.transform.localPosition, offset, 1.5f * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        _grounded = true;
+        if (collision.tag != "Enemy")
+        {
+            _grounded = true;
+            _collisionCheck = false;
+        }
+        else
+        {
+            Respawn();
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        _grounded = false;
+        _collisionCheck = true;
+        StartCoroutine(SafeJump());
+    }
+
+    IEnumerator SafeJump()
+    {
+        yield return new WaitForSeconds(.8f);
+        if (_collisionCheck == true)
+        {
+            _grounded = false;
+        }
+    }
+
+    public void Respawn()
+    {
+        transform.position = _respawnPoint.position;
+        _grounded = true;
+        _collisionCheck = false;
+        rb.velocity = new Vector3(0,0,0);
+        Camera.transform.localPosition = transform.position;
     }
 
 }

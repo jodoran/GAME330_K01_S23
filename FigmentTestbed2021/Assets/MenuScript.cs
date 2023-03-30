@@ -14,8 +14,12 @@ public class MenuScript : MonoBehaviour
     private bool _levelSelect = false;
     private int _levelSet = 0;
 
+    float timer;
+
     private void Update()
     {
+        timer += Time.deltaTime;
+
         if (_levelSelect == true)
         {
             if (FigmentInput.GetButtonUp(FigmentInput.FigmentButton.LeftButton))
@@ -41,7 +45,7 @@ public class MenuScript : MonoBehaviour
                     _levels[_levelSet].transform.GetChild(0).gameObject.SetActive(true);
                 }
             }
-            else if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
+            else if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton) && timer >= 1)
             {
                 var level = _levelSet + 1;
                 SceneManager.LoadScene("Level" + level);
@@ -53,6 +57,8 @@ public class MenuScript : MonoBehaviour
             {
                 EnterLevelScreen.Invoke();
                 _levelSelect = true;
+
+                timer = 0;
             }
         }
     }
