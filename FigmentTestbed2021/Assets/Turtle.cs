@@ -6,6 +6,7 @@ public class Turtle : MonoBehaviour
 {
     Rigidbody2D rb;
     public int _health;
+    public int _damage;
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +39,11 @@ public class Turtle : MonoBehaviour
         else if (rb.velocity.x < 0)
         {
             rb.velocity = new Vector3(25, 0, 0);
+        }
+
+        if(collision.gameObject.tag == "Player")
+        {
+            collision.GetComponent<CorePlayerScript>().TakeDamage(_damage);
         }
     }
 }

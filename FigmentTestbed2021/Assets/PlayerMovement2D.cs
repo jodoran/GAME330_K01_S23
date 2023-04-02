@@ -5,10 +5,17 @@ using UnityEngine;
 public class PlayerMovement2D : MonoBehaviour
 {
     public float _jumpHeight;
+    public float _jumpTimeForce;
+
     public float _movementSpeed;
     public float _speedLimit;
+
+    public float _fallForgiveness;
     public float _cameraOffset;
+
+
     bool _grounded;
+    bool _jumpEnabled = true;
 
     public GameObject Camera;
     public Transform _respawnPoint;
@@ -48,7 +55,7 @@ public class PlayerMovement2D : MonoBehaviour
         // If we press the action button, move forward
         if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
         {
-            if (_grounded)
+            if (_grounded && _jumpEnabled)
             {
                 rb.AddForce(Vector2.up * _jumpHeight);
                 _grounded = false;
@@ -67,7 +74,7 @@ public class PlayerMovement2D : MonoBehaviour
         if(!_grounded)
         {
             airtime += Time.deltaTime;
-            rb.gravityScale += Time.deltaTime / 2;
+            rb.gravityScale += (_jumpTimeForce / 100) * Time.deltaTime;
         }
         else
         {
@@ -90,26 +97,22 @@ public class PlayerMovement2D : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag != "Enemy")
-        {
-            _grounded = true;
-            _collisionCheck = false;
-        }
-        else
-        {
-            Respawn();
-        }
+        _grounded = true;
+        _collisionCheck = false;
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        _collisionCheck = true;
-        StartCoroutine(SafeJump());
+        if (collision.tag != "Enemy")
+        {
+            _collisionCheck = true;
+            StartCoroutine(SafeJump());
+        }
     }
 
     IEnumerator SafeJump()
     {
-        yield return new WaitForSeconds(.8f);
+        yield return new WaitForSeconds(_fallForgiveness / 100);
         if (_collisionCheck == true)
         {
             _grounded = false;
@@ -122,7 +125,16 @@ public class PlayerMovement2D : MonoBehaviour
         _grounded = true;
         _collisionCheck = false;
         rb.velocity = new Vector3(0,0,0);
-        Camera.transform.localPosition = transform.position;
+        Camera.transform.position = transform.position;
     }
 
+    public void DisableJump()
+    {
+        _jumpEnabled = false;
+    }
+
+    public void EnableJump()
+    {
+        _jumpEnabled = true;
+    }
 }
