@@ -25,6 +25,8 @@ public class PlayerMovement2D : MonoBehaviour
     bool _collisionCheck;
     float airtime = 0;
 
+    public LayerMask ground;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -61,7 +63,7 @@ public class PlayerMovement2D : MonoBehaviour
                 rb.AddForce(Vector2.up * _jumpHeight);
                 _grounded = false;
                 airtime = 0;
-                rb.gravityScale = 1;
+                rb.gravityScale = .5f;
             }
         }
 
@@ -75,12 +77,12 @@ public class PlayerMovement2D : MonoBehaviour
         if(!_grounded && _turretActive == false)
         {
             airtime += Time.deltaTime;
-            rb.gravityScale += (_jumpTimeForce / 100) * Time.deltaTime;
+           // rb.gravityScale += (_jumpTimeForce) * Time.deltaTime;
         }
         else
         {
             airtime = 0;
-            rb.gravityScale = 1;
+            rb.gravityScale = .5f;
         }
 
         if (!_grounded && rb.velocity.y > 0)
@@ -94,6 +96,11 @@ public class PlayerMovement2D : MonoBehaviour
         }
 
         Camera.transform.localPosition = Vector2.Lerp(Camera.transform.localPosition, offset, 1.5f * Time.deltaTime);
+
+       if(Physics2D.Linecast(transform.position, Vector2.down * .6f, ground))
+       {
+            _grounded = true;
+       }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

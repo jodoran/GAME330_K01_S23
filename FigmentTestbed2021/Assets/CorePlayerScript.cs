@@ -8,7 +8,7 @@ public class CorePlayerScript : MonoBehaviour
 {
     public int _health = 9;
     public float _immunityTime = 3f;
-    public Slider HealthBar;
+    public List<GameObject> _healthObject = new List<GameObject> ();
     public GameObject DeathScreen;
     public GameObject PlayerCamera;
 
@@ -37,10 +37,17 @@ public class CorePlayerScript : MonoBehaviour
     public void TakeDamage(int DamageTaken)
     {
         _health -= DamageTaken;
-        HealthBar.value = _health;
+        
         if (_health <= 0)
         {
             Death();
+        }
+        else
+        {
+            for (int i = 0; i < _healthObject.Count; i++)
+            {
+                _healthObject[i].SetActive(i <= _health);
+            }
         }
     }
 
