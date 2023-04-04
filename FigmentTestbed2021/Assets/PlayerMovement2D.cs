@@ -13,6 +13,7 @@ public class PlayerMovement2D : MonoBehaviour
     public float _fallForgiveness;
     public float _cameraOffset;
 
+    public bool _turretActive;
 
     bool _grounded;
     bool _jumpEnabled = true;
@@ -71,7 +72,7 @@ public class PlayerMovement2D : MonoBehaviour
             rb.AddForce(velocity * Time.deltaTime);
         }
 
-        if(!_grounded)
+        if(!_grounded && _turretActive == false)
         {
             airtime += Time.deltaTime;
             rb.gravityScale += (_jumpTimeForce / 100) * Time.deltaTime;
@@ -97,13 +98,16 @@ public class PlayerMovement2D : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        _grounded = true;
-        _collisionCheck = false;
+        if (collision.tag != "Wall")
+        {
+            _grounded = true;
+            _collisionCheck = false;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.tag != "Enemy")
+        if (collision.tag != "Enemy" && collision.tag != "Wall")
         {
             _collisionCheck = true;
             StartCoroutine(SafeJump());

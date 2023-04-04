@@ -7,12 +7,13 @@ public class Turtle : MonoBehaviour
     Rigidbody2D rb;
     public int _health;
     public int _damage;
+    public float _speed;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.velocity = new Vector3(25, 0, 0);
+        rb.velocity = new Vector3(_speed, 0, 0);
     }
 
     private void FixedUpdate()
@@ -21,11 +22,11 @@ public class Turtle : MonoBehaviour
         {
             if (rb.velocity.x >= 0)
             {
-                rb.velocity = new Vector3(-25, 0, 0);
+                rb.velocity = new Vector3(-_speed, 0, 0);
             }
             else if (rb.velocity.x < 0)
             {
-                rb.velocity = new Vector3(25, 0, 0);
+                rb.velocity = new Vector3(_speed, 0, 0);
             }
         }
     }
@@ -34,11 +35,11 @@ public class Turtle : MonoBehaviour
     {
         if (rb.velocity.x >= 0)
         {
-            rb.velocity = new Vector3(-25, 0, 0);
+            rb.velocity = new Vector3(-_speed, 0, 0);
         }
         else if (rb.velocity.x < 0)
         {
-            rb.velocity = new Vector3(25, 0, 0);
+            rb.velocity = new Vector3(_speed, 0, 0);
         }
 
         if(collision.gameObject.tag == "Player")
