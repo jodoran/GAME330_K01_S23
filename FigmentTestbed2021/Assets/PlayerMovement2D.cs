@@ -7,7 +7,8 @@ public class PlayerMovement2D : MonoBehaviour
     public float _jumpHeight;
     public float _jumpTimeForce;
 
-    public float _movementSpeed;
+    public float _groundSpeed;
+    public float _swimSpeed;
     public float _speedLimit;
 
     public float _fallForgiveness;
@@ -17,13 +18,14 @@ public class PlayerMovement2D : MonoBehaviour
 
     bool _grounded;
     bool _jumpEnabled = true;
+    bool _rightMovement;
+    bool _leftMovement;
 
     public GameObject Camera;
     public Transform _respawnPoint;
 
     Rigidbody2D rb;
     bool _collisionCheck;
-    float airtime = 0;
 
     public LayerMask ground;
 
@@ -42,28 +44,60 @@ public class PlayerMovement2D : MonoBehaviour
         // Rotate the player by pressing left or right
         if (FigmentInput.GetButton(FigmentInput.FigmentButton.LeftButton))
         {
-            horizontal = -_movementSpeed;
-            offset = new Vector2(transform.localPosition.x - _cameraOffset, transform.localPosition.y + 2f);
+            _rightMovement = false;
+            _leftMovement = true;
+
+            if (_grounded)
+            {
+                horizontal = -_groundSpeed;
+            }
+            else
+            {
+                horizontal = -_swimSpeed;
+            }
+
+            offset = new Vector2(transform.localPosition.x - _cameraOffset, transform.localPosition.y);
         }
         else if (FigmentInput.GetButton(FigmentInput.FigmentButton.RightButton))
         {
-            horizontal = _movementSpeed;
-            offset = new Vector2(transform.localPosition.x + _cameraOffset, transform.localPosition.y + 2f);
+            _rightMovement = true;
+            _leftMovement = false;
+
+            if (_grounded)
+            {
+                horizontal = _groundSpeed;
+            }
+            else
+            {
+                horizontal = _swimSpeed;
+            }
+            offset = new Vector2(transform.localPosition.x + _cameraOffset, transform.localPosition.y);
         }
         else
         {
-            offset = new Vector2(transform.localPosition.x, transform.localPosition.y + 2f);
+            offset = new Vector2(transform.localPosition.x, transform.localPosition.y);
         }
 
-        // If we press the action button, move forward
         if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
         {
-            if (_grounded && _jumpEnabled)
+            Vector2 movement = new Vector2(0, 0);
+
+            if (_jumpEnabled)
             {
                 rb.AddForce(Vector2.up * _jumpHeight);
+                if (_rightMovement)
+                {
+                    movement = new Vector2(_swimSpeed, 0);
+                    rb.velocity = movement * Time.deltaTime;
+                }
+                else if (_leftMovement)
+                {
+                    movement = new Vector2(_swimSpeed, 0);
+
+                    rb.velocity = -movement * Time.deltaTime;
+                }
+
                 _grounded = false;
-                airtime = 0;
-                rb.gravityScale = .5f;
             }
         }
 
@@ -74,28 +108,16 @@ public class PlayerMovement2D : MonoBehaviour
             rb.AddForce(velocity * Time.deltaTime);
         }
 
-        if(!_grounded && _turretActive == false)
-        {
-            airtime += Time.deltaTime;
-           // rb.gravityScale += (_jumpTimeForce) * Time.deltaTime;
-        }
-        else
-        {
-            airtime = 0;
-            rb.gravityScale = .5f;
-        }
-
         if (!_grounded && rb.velocity.y > 0)
         {
             offset = new Vector2(offset.x, transform.localPosition.y + _cameraOffset);
         }
         else if (!_grounded && rb.velocity.y < 0)
         {
-            offset = new Vector2(offset.x, transform.localPosition.y - _cameraOffset * airtime);
-            airtime += Time.deltaTime;
+            offset = new Vector2(offset.x, transform.localPosition.y - _cameraOffset);
         }
 
-        Camera.transform.localPosition = Vector2.Lerp(Camera.transform.localPosition, offset, 1.5f * Time.deltaTime);
+       Camera.transform.localPosition = Vector2.Lerp(Camera.transform.localPosition, offset, 1.5f * Time.deltaTime);
 
        if(Physics2D.Linecast(transform.position, Vector2.down * .6f, ground))
        {

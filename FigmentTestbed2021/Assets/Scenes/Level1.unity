@@ -13130,7 +13130,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 2
+  m_GravityScale: 0.35
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -13201,10 +13201,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af0e4b8ebe4c0c847bc75644c91d5e70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jumpHeight: 200
+  _jumpHeight: 150
   _jumpTimeForce: 5
-  _movementSpeed: 1500
-  _speedLimit: 4.5
+  _groundSpeed: 1000
+  _swimSpeed: 100
+  _speedLimit: 2
   _fallForgiveness: 18
   _cameraOffset: 2
   _turretActive: 0
@@ -18984,7 +18985,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 1106495281}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 7d81193361f04c843a7fbede5c4b1a90, type: 2}
+  m_Material: {fileID: 6200000, guid: 99ce7a55766da29458e93870f295962d, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
