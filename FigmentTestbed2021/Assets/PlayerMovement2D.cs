@@ -6,13 +6,16 @@ public class PlayerMovement2D : MonoBehaviour
 {
     public float _jumpHeight;
     public float _jumpTimeForce;
+    public float _jumpPower;
 
+    public float _changeSpeed;
     public float _groundSpeed;
     public float _swimSpeed;
     public float _speedLimit;
 
     public float _fallForgiveness;
-    public float _cameraOffset;
+    public float _cameraOffsetVertical;
+    public float _cameraOffsetHorizontal;
 
     public bool _turretActive;
 
@@ -44,6 +47,9 @@ public class PlayerMovement2D : MonoBehaviour
         // Rotate the player by pressing left or right
         if (FigmentInput.GetButton(FigmentInput.FigmentButton.LeftButton))
         {
+
+            if (_rightMovement && !_grounded) { rb.AddForce(new Vector2(-_changeSpeed, 0) * Time.deltaTime); }
+
             _rightMovement = false;
             _leftMovement = true;
 
@@ -56,10 +62,13 @@ public class PlayerMovement2D : MonoBehaviour
                 horizontal = -_swimSpeed;
             }
 
-            offset = new Vector2(transform.localPosition.x - _cameraOffset, transform.localPosition.y);
+            offset = new Vector2(transform.localPosition.x - _cameraOffsetHorizontal, transform.localPosition.y + 2f);
         }
         else if (FigmentInput.GetButton(FigmentInput.FigmentButton.RightButton))
         {
+
+            if(_leftMovement && !_grounded) { rb.AddForce(new Vector2(_changeSpeed, 0) * Time.deltaTime); }
+
             _rightMovement = true;
             _leftMovement = false;
 
@@ -71,11 +80,11 @@ public class PlayerMovement2D : MonoBehaviour
             {
                 horizontal = _swimSpeed;
             }
-            offset = new Vector2(transform.localPosition.x + _cameraOffset, transform.localPosition.y);
+            offset = new Vector2(transform.localPosition.x + _cameraOffsetHorizontal, transform.localPosition.y + 2f);
         }
         else
         {
-            offset = new Vector2(transform.localPosition.x, transform.localPosition.y);
+            offset = new Vector2(transform.localPosition.x, transform.localPosition.y + 2f);
         }
 
         if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
@@ -87,12 +96,12 @@ public class PlayerMovement2D : MonoBehaviour
                 rb.AddForce(Vector2.up * _jumpHeight);
                 if (_rightMovement)
                 {
-                    movement = new Vector2(_swimSpeed, 0);
+                    movement = new Vector2(_jumpPower, 0);
                     rb.velocity = movement * Time.deltaTime;
                 }
                 else if (_leftMovement)
                 {
-                    movement = new Vector2(_swimSpeed, 0);
+                    movement = new Vector2(_jumpPower, 0);
 
                     rb.velocity = -movement * Time.deltaTime;
                 }
@@ -103,23 +112,23 @@ public class PlayerMovement2D : MonoBehaviour
 
         Vector2 velocity = new Vector2 (horizontal, 0);
 
-        if(Mathf.Abs(rb.velocity.x) < _speedLimit)
+        if (Mathf.Abs(rb.velocity.x) < _speedLimit)
         {
             rb.AddForce(velocity * Time.deltaTime);
         }
 
         if (!_grounded && rb.velocity.y > 0)
         {
-            offset = new Vector2(offset.x, transform.localPosition.y + _cameraOffset);
+            offset = new Vector2(offset.x, transform.localPosition.y + _cameraOffsetVertical);
         }
         else if (!_grounded && rb.velocity.y < 0)
         {
-            offset = new Vector2(offset.x, transform.localPosition.y - _cameraOffset);
+            offset = new Vector2(offset.x, transform.localPosition.y - _cameraOffsetVertical);
         }
 
        Camera.transform.localPosition = Vector2.Lerp(Camera.transform.localPosition, offset, 1.5f * Time.deltaTime);
 
-       if(Physics2D.Linecast(transform.position, Vector2.down * .6f, ground))
+       if(Physics2D.Linecast(transform.position, Vector2.down * .1f, ground))
        {
             _grounded = true;
        }
@@ -158,7 +167,7 @@ public class PlayerMovement2D : MonoBehaviour
         _grounded = true;
         _collisionCheck = false;
         rb.velocity = new Vector3(0,0,0);
-        Camera.transform.position = transform.position;
+        Camera.transform.position = _respawnPoint.position;
     }
 
     public void DisableJump()
