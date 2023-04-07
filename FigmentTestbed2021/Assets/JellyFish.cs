@@ -7,8 +7,8 @@ public class JellyFish : MonoBehaviour
     Rigidbody2D rb;
     public int _health;
     public int _damage;
-    public int _maxY;
-    public int _minY;
+    public float _maxY;
+    public float _minY;
     public float _movementSpeed;
 
     private bool _downward;

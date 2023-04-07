@@ -24,6 +24,7 @@ public class PlayerMovement2D : MonoBehaviour
     bool _rightMovement;
     bool _leftMovement;
 
+    public AudioSource JumpSoundEffect;
     public GameObject Camera;
     public Transform _respawnPoint;
 
@@ -90,7 +91,7 @@ public class PlayerMovement2D : MonoBehaviour
         if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
         {
             Vector2 movement = new Vector2(0, 0);
-
+            JumpSoundEffect.Play();
             if (_jumpEnabled)
             {
                 rb.AddForce(Vector2.up * _jumpHeight);
