@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class CorePlayerScript : MonoBehaviour
 {
-    public int _health = 9;
+    public int _health = 8;
     public float _immunityTime = 3f;
     public List<GameObject> _healthObject = new List<GameObject> ();
     public GameObject DeathScreen;
@@ -37,17 +37,16 @@ public class CorePlayerScript : MonoBehaviour
     public void TakeDamage(int DamageTaken)
     {
         _health -= DamageTaken;
-        
+
+        for (int i = 0; i < _healthObject.Count; i++)
+        {
+            _healthObject[i].SetActive(i <= _health);
+        }
+
         if (_health <= 0)
         {
             Death();
-        }
-        else
-        {
-            for (int i = 0; i < _healthObject.Count; i++)
-            {
-                _healthObject[i].SetActive(i <= _health);
-            }
+
         }
     }
 

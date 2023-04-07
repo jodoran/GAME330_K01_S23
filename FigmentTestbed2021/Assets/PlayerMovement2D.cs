@@ -30,6 +30,7 @@ public class PlayerMovement2D : MonoBehaviour
 
     Rigidbody2D rb;
     bool _collisionCheck;
+    SpriteRenderer _playerSprite;
 
     public LayerMask ground;
 
@@ -37,6 +38,7 @@ public class PlayerMovement2D : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        _playerSprite = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -48,7 +50,7 @@ public class PlayerMovement2D : MonoBehaviour
         // Rotate the player by pressing left or right
         if (FigmentInput.GetButton(FigmentInput.FigmentButton.LeftButton))
         {
-
+            _playerSprite.flipX = true;
             if (_rightMovement && !_grounded) { rb.AddForce(new Vector2(-_changeSpeed, 0) * Time.deltaTime); }
 
             _rightMovement = false;
@@ -67,8 +69,8 @@ public class PlayerMovement2D : MonoBehaviour
         }
         else if (FigmentInput.GetButton(FigmentInput.FigmentButton.RightButton))
         {
-
-            if(_leftMovement && !_grounded) { rb.AddForce(new Vector2(_changeSpeed, 0) * Time.deltaTime); }
+            _playerSprite.flipX = false;
+            if (_leftMovement && !_grounded) { rb.AddForce(new Vector2(_changeSpeed, 0) * Time.deltaTime); }
 
             _rightMovement = true;
             _leftMovement = false;
