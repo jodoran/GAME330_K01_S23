@@ -7,6 +7,10 @@ TagManager:
   - Button
   - Bullet
   - Enemy
+  - KillZone
+  - PhaseGround
+  - GroundChecker
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -18,7 +22,7 @@ TagManager:
   - Ground
   - Interactable
   - Enemy
-  - 
+  - Wall
   - 
   - 
   - 

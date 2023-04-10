@@ -8,7 +8,7 @@ public class Turret : MonoBehaviour
     public Transform _turretSeat;
 
     private bool _reset = false;
-    private bool _active = false;
+    private bool _active = true;
 
     private void Update()
     {
@@ -28,6 +28,8 @@ public class Turret : MonoBehaviour
         {
             collision.transform.position = _turretSeat.position;
             collision.GetComponent<PlayerMovement2D>().DisableJump();
+            collision.GetComponent<PlayerMovement2D>()._turretActive = true;
+            collision.GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
             _reset = true;
             _active = true;
         }
@@ -38,6 +40,7 @@ public class Turret : MonoBehaviour
         if (collision.tag == "Player")
         {
             collision.GetComponent<PlayerMovement2D>().EnableJump();
+            collision.GetComponent<PlayerMovement2D>()._turretActive = false;
             _reset = false;
         }
     }

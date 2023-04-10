@@ -1,12 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class CorePlayerScript : MonoBehaviour
 {
-    public int _health = 9;
+    public int _health = 8;
     public float _immunityTime = 3f;
-    public List<GameObject> _healthIcons = new List<GameObject>();
+    public List<GameObject> _healthObject = new List<GameObject> ();
+    public GameObject DeathScreen;
+    public GameObject PlayerCamera;
+
+    private void Update()
+    {
+        if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton) && _health <= 0)
+        {
+            SceneManager.LoadScene("Menu");
+        }
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -16,12 +28,32 @@ public class CorePlayerScript : MonoBehaviour
             StartCoroutine(ImmunityTimer(_elay));
             this.GetComponent<Animator>().SetTrigger("Immune");
         }
+        else if (collision.gameObject.tag == "KillZone")
+        {
+            TakeDamage(collision.gameObject.GetComponent<KillZone>()._damage);
+        }
     }
-    
+
     public void TakeDamage(int DamageTaken)
     {
         _health -= DamageTaken;
-        _healthIcons[_health].SetActive(false);
+
+        for (int i = 0; i < _healthObject.Count; i++)
+        {
+            _healthObject[i].SetActive(i <= _health);
+        }
+
+        if (_health <= 0)
+        {
+            Death();
+
+        }
+    }
+
+    void Death()
+    {
+        DeathScreen.SetActive(true);
+        this.GetComponent<PlayerMovement2D>().enabled = false;
     }
 
     IEnumerator ImmunityTimer(int _elay)

@@ -40,7 +40,7 @@ public class FigmentInput : MonoBehaviour {
         // Only update if the mouse is not being used
         if (!Input.GetMouseButton(0))
         {
-            LaunchButtonEventsFromKeyboard(FigmentButton.LeftButton, leftKeys );
+            LaunchButtonEventsFromKeyboard(FigmentButton.LeftButton, leftKeys);
             LaunchButtonEventsFromKeyboard(FigmentButton.RightButton, rightKeys);
             LaunchButtonEventsFromKeyboard(FigmentButton.ActionButton, actionKeys);
 
