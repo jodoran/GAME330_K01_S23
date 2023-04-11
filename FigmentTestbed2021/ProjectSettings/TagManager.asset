@@ -11,6 +11,7 @@ TagManager:
   - PhaseGround
   - GroundChecker
   - Wall
+  - AboveWater
   layers:
   - Default
   - TransparentFX
