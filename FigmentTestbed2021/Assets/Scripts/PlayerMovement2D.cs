@@ -106,7 +106,7 @@ public class PlayerMovement2D : MonoBehaviour
         if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
         {
             Vector2 movement = new Vector2(0, 0);
-            JumpSoundEffect.Play();
+
             if (_jumpEnabled)
             {
                 rb.AddForce(Vector2.up * _jumpHeight);
@@ -122,6 +122,8 @@ public class PlayerMovement2D : MonoBehaviour
                     rb.velocity = -movement * Time.deltaTime;
                 }
 
+                JumpSoundEffect.pitch = Random.Range(0.5f, 1f);
+                JumpSoundEffect.Play();
                 JumpParticle.Play();
                 _grounded = false;
             }

@@ -8,15 +8,19 @@ public class CorePlayerScript : MonoBehaviour
 {
     public int _health = 8;
     public float _immunityTime = 3f;
-    public List<GameObject> _healthObject = new List<GameObject> ();
+    public List<GameObject> _healthObject = new List<GameObject>();
     public GameObject DeathScreen;
     public GameObject PlayerCamera;
+    public AudioSource MainMusic;
 
     public Text CollectCountNum;
     public int _collectableCount;
     public int _maxCollectable;
+    public List<GameObject> _collectGates = new List<GameObject>();
 
     public int _levelNum;
+
+    private bool _immune;
 
     private void Start()
     {
@@ -42,22 +46,29 @@ public class CorePlayerScript : MonoBehaviour
         else if (collision.gameObject.tag == "KillZone")
         {
             TakeDamage(collision.gameObject.GetComponent<KillZone>()._damage);
+            int _elay = collision.gameObject.layer;
+            StartCoroutine(ImmunityTimer(_elay));
+            this.GetComponent<Animator>().SetTrigger("Immune");
         }
     }
 
     public void TakeDamage(int DamageTaken)
     {
-        _health -= DamageTaken;
-
-        for (int i = 0; i < _healthObject.Count; i++)
+        if (_immune == false)
         {
-            _healthObject[i].SetActive(i <= _health);
-        }
+            _immune = true;
+            _health -= DamageTaken;
 
-        if (_health <= 0)
-        {
-            Death();
+            for (int i = 0; i < _healthObject.Count; i++)
+            {
+                _healthObject[i].SetActive(i <= _health);
+            }
 
+            if (_health <= 0)
+            {
+                Death();
+
+            }
         }
     }
 
@@ -75,19 +86,27 @@ public class CorePlayerScript : MonoBehaviour
             }
             SceneManager.LoadScene("Menu");
         }
+        else
+        {
+            foreach(GameObject gates in _collectGates)
+            {
+                gates.GetComponent<BubbleWall>().SetBubbleWall(_collectableCount);
+            }
+        }
     }
 
     void Death()
     {
+        MainMusic.Stop();
         DeathScreen.SetActive(true);
         this.GetComponent<PlayerMovement2D>().enabled = false;
     }
 
     IEnumerator ImmunityTimer(int _elay)
     {
-        
         Physics2D.IgnoreLayerCollision(layer1: gameObject.layer, layer2: _elay, true);
         yield return new WaitForSeconds(_immunityTime);
         Physics2D.IgnoreLayerCollision(layer1: gameObject.layer, layer2: _elay, false);
+        _immune = false;
     }
 }
