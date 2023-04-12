@@ -35,9 +35,14 @@ public class MenuScript : MonoBehaviour
         {
             if(i > _levelsComplete)
             {
-                LevelButtons[i].GetComponent<Mask>().enabled = false;
-                LevelButtons[i].GetComponent<Image>().color = Color.clear;
-                LevelButtons[i].transform.GetChild(0).GetComponent<Image>().sprite = LockIcon;
+                if(LevelButtons[i])
+                {
+                    LevelButtons[i].transform.GetChild(1).GetComponent<Image>().sprite = LockIcon;
+                }
+                else
+                {
+                    Debug.LogWarning("LevelButtons" + LevelButtons[i] + "is not set propertly");
+                }
                 _levels[i].transform.GetChild(0).gameObject.SetActive(false);
                 _levels.RemoveAt(i);
             }
