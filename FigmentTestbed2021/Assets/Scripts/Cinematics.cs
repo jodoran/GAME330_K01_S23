@@ -8,10 +8,33 @@ public class Cinematics : MonoBehaviour
     public List<GameObject> Scenes = new List<GameObject>();
     public GameObject Player;
 
+    private bool End;
 
     private void Start()
     {
         StartCoroutine(PlayScenes());
+    }
+
+    private void Update()
+    {
+        if (FigmentInput.GetButtonUp(FigmentInput.FigmentButton.LeftButton))
+        {
+            Player.GetComponent<PlayerMovement2D>().enabled = true;
+            this.transform.parent.gameObject.SetActive(false);
+            Destroy(gameObject);
+        }
+        else if (FigmentInput.GetButtonUp(FigmentInput.FigmentButton.RightButton))
+        {
+            Player.GetComponent<PlayerMovement2D>().enabled = true;
+            this.transform.parent.gameObject.SetActive(false);
+            Destroy(gameObject);
+        }
+        else if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
+        {
+            Player.GetComponent<PlayerMovement2D>().enabled = true;
+            this.transform.parent.gameObject.SetActive(false);
+            Destroy(gameObject);
+        }
     }
 
     IEnumerator PlayScenes()
@@ -26,7 +49,6 @@ public class Cinematics : MonoBehaviour
             _scene.CrossFadeColor(Color.clear, 2f, false, true);
             yield return new WaitForSeconds(2f);
             scene.SetActive(false);
-            
         }
         Image Background = this.transform.GetComponentInParent<Image>();
         Background.CrossFadeColor(Color.clear, 2f, false, true);

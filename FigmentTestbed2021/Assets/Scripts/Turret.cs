@@ -9,6 +9,7 @@ public class Turret : MonoBehaviour
 
     public Sprite ShootingSprite;
     public Sprite IdleSprite;
+    public AudioSource ShootSound;
 
     private bool _reset = false;
     private bool _active = true;
@@ -19,6 +20,7 @@ public class Turret : MonoBehaviour
         {
             if (_active == true && _reset == true)
             {
+                ShootSound.Play();
                 StartCoroutine(Shoot());
                 _active = false;
             }

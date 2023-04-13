@@ -10,8 +10,11 @@ public class CorePlayerScript : MonoBehaviour
     public float _immunityTime = 3f;
     public List<GameObject> _healthObject = new List<GameObject>();
     public GameObject DeathScreen;
+    public GameObject WinScreen;
     public GameObject PlayerCamera;
     public AudioSource MainMusic;
+    public AudioSource DeathSound;
+    public AudioSource WinSound;
 
     public Text CollectCountNum;
     public int _collectableCount;
@@ -20,6 +23,7 @@ public class CorePlayerScript : MonoBehaviour
 
     public int _levelNum;
 
+    private bool _gameEnd;
     private bool _immune;
 
     private void Start()
@@ -29,7 +33,8 @@ public class CorePlayerScript : MonoBehaviour
 
     private void Update()
     {
-        if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton) && _health <= 0)
+        if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton) && _health <= 0 ||
+            FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton) && _gameEnd == true)
         {
             SceneManager.LoadScene("Menu");
         }
@@ -67,7 +72,7 @@ public class CorePlayerScript : MonoBehaviour
             if (_health <= 0)
             {
                 Death();
-
+                DeathSound.Play();
             }
         }
     }
@@ -84,7 +89,10 @@ public class CorePlayerScript : MonoBehaviour
             {
                 PlayerPrefs.SetInt("LevelsComplete", _levelNum);
             }
-            SceneManager.LoadScene("Menu");
+            WinScreen.SetActive(true);
+            WinSound.Play();
+            MainMusic.Stop();
+            _gameEnd = true;
         }
         else
         {
