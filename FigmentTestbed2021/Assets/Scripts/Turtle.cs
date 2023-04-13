@@ -33,18 +33,26 @@ public class Turtle : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (rb.velocity.x >= 0)
+        if (collision.tag == "Ground" || collision.tag == "Wall")
         {
-            rb.velocity = new Vector3(-_speed, 0, 0);
-        }
-        else if (rb.velocity.x < 0)
-        {
-            rb.velocity = new Vector3(_speed, 0, 0);
-        }
+            if (rb.velocity.x >= 0)
+            {
+                rb.velocity = new Vector3(-_speed, 0, 0);
+            }
+            else if (rb.velocity.x < 0)
+            {
+                rb.velocity = new Vector3(_speed, 0, 0);
+            }
 
-        if(collision.gameObject.tag == "Player")
-        {
-            collision.GetComponent<CorePlayerScript>().TakeDamage(_damage);
+            if (collision.gameObject.tag == "Player")
+            {
+                collision.GetComponent<CorePlayerScript>().TakeDamage(_damage);
+            }
         }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        OnTriggerEnter2D(collision);
     }
 }

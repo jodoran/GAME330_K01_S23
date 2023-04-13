@@ -18,7 +18,10 @@ public class BubbleWall : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        GetComponent<ParticleSystem>().Play();
-        GetComponent<Collider2D>().enabled = true;
+        if (collision.tag == "Player")
+        {
+            GetComponent<ParticleSystem>().Play();
+            GetComponent<Collider2D>().enabled = true;
+        }
     }
 }
