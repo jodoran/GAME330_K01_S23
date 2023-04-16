@@ -9,12 +9,16 @@ public class CorePlayerScript : MonoBehaviour
     public int _health = 8;
     public float _immunityTime = 3f;
     public List<GameObject> _healthObject = new List<GameObject>();
+
     public GameObject DeathScreen;
     public GameObject WinScreen;
     public GameObject PlayerCamera;
+    public GameObject EndCinematic;
+
     public AudioSource MainMusic;
     public AudioSource DeathSound;
     public AudioSource WinSound;
+    public AudioSource HitSound;
 
     public Text CollectCountNum;
     public int _collectableCount;
@@ -24,11 +28,13 @@ public class CorePlayerScript : MonoBehaviour
     public int _levelNum;
 
     private bool _gameEnd;
-    private bool _immune;
+    private bool _immune = false;
+    Animator _playerAnimation;
 
     private void Start()
     {
         SetCollectedCount();
+        _playerAnimation = GetComponent<Animator>();
     }
 
     private void Update()
@@ -36,38 +42,42 @@ public class CorePlayerScript : MonoBehaviour
         if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton) && _health <= 0 ||
             FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton) && _gameEnd == true)
         {
-            SceneManager.LoadScene("Menu");
+            if(EndCinematic == null)
+            {
+                SceneManager.LoadScene("Menu");
+            }
+            else if (EndCinematic.GetComponent<Cinematics>().End)
+            { 
+                SceneManager.LoadScene("Menu"); 
+            }
+            
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "KillZone")
         {
             int _elay = collision.gameObject.layer;
-            StartCoroutine(ImmunityTimer(_elay));
-            this.GetComponent<Animator>().SetTrigger("Immune");
-        }
-        else if (collision.gameObject.tag == "KillZone")
-        {
-            TakeDamage(collision.gameObject.GetComponent<KillZone>()._damage);
-            int _elay = collision.gameObject.layer;
-            StartCoroutine(ImmunityTimer(_elay));
-            this.GetComponent<Animator>().SetTrigger("Immune");
+            TakeDamage(collision.gameObject.GetComponent<KillZone>()._damage, _elay);
         }
     }
 
-    public void TakeDamage(int DamageTaken)
+    public void TakeDamage(int DamageTaken, int _elay)
     {
         if (_immune == false)
         {
             _immune = true;
             _health -= DamageTaken;
+            HitSound.Play();
 
             for (int i = 0; i < _healthObject.Count; i++)
             {
                 _healthObject[i].SetActive(i <= _health);
             }
+
+            _playerAnimation.SetTrigger("Damaged");
+            StartCoroutine(ImmunityTimer(_elay));
 
             if (_health <= 0)
             {
@@ -92,6 +102,13 @@ public class CorePlayerScript : MonoBehaviour
             WinScreen.SetActive(true);
             WinSound.Play();
             MainMusic.Stop();
+
+            if (EndCinematic != null)
+            {
+                EndCinematic.transform.parent.gameObject.SetActive(true);
+                StartCoroutine(EndCinematic.GetComponent<Cinematics>().PlayScenes());
+            }
+
             _gameEnd = true;
         }
         else
@@ -107,6 +124,8 @@ public class CorePlayerScript : MonoBehaviour
     {
         MainMusic.Stop();
         DeathScreen.SetActive(true);
+        _gameEnd = true;
+        EndCinematic.GetComponent<Cinematics>().End = true;
         this.GetComponent<PlayerMovement2D>().enabled = false;
     }
 

@@ -6,6 +6,7 @@ public class Bullets : MonoBehaviour
 {
     public GameObject EnemySet;
     public GameObject Blast;
+    public AudioSource BlastSound;
 
     ParticleSystem ps;
 
@@ -36,6 +37,7 @@ public class Bullets : MonoBehaviour
             enter[i] = p;
             Blast.transform.position = EnemySet.transform.position;
             Blast.GetComponent<ParticleSystem>().Play();
+            BlastSound.Play();
         }
 
         // re-assign the modified particles back into the particle system
