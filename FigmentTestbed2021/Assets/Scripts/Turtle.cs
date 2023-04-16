@@ -56,16 +56,18 @@ public class Turtle : MonoBehaviour
             {
                 rb.velocity = new Vector3(-_speed, 0, 0);
                 Hit1.Play();
+                GetComponent<SpriteRenderer>().flipX = false;
             }
             else if (rb.velocity.x < 0)
             {
                 rb.velocity = new Vector3(_speed, 0, 0);
                 Hit2.Play();
+                GetComponent<SpriteRenderer>().flipX = true;
             }
 
             if (collision.gameObject.tag == "Player")
             {
-                collision.GetComponent<CorePlayerScript>().TakeDamage(_damage);
+                collision.GetComponent<CorePlayerScript>().TakeDamage(_damage, gameObject.layer);
             }
         }
     }

@@ -32,6 +32,7 @@ public class PlayerMovement2D : MonoBehaviour
     Rigidbody2D rb;
     bool _collisionCheck;
     SpriteRenderer _playerSprite;
+    Animator _playerAnimation;
 
     public LayerMask ground;
     Vector2 offset;
@@ -41,6 +42,7 @@ public class PlayerMovement2D : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         _playerSprite = GetComponent<SpriteRenderer>();
+        _playerAnimation = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -53,6 +55,7 @@ public class PlayerMovement2D : MonoBehaviour
         {
             _playerSprite.flipX = true;
             if (_rightMovement && !_grounded) { rb.AddForce(new Vector2(-_changeSpeed, 0) * Time.deltaTime); }
+            _playerAnimation.SetBool("Walking", true);
 
             _rightMovement = false;
             _leftMovement = true;
@@ -72,6 +75,7 @@ public class PlayerMovement2D : MonoBehaviour
         {
             _playerSprite.flipX = false;
             if (_leftMovement && !_grounded) { rb.AddForce(new Vector2(_changeSpeed, 0) * Time.deltaTime); }
+            _playerAnimation.SetBool("Walking", true);
 
             _rightMovement = true;
             _leftMovement = false;
@@ -89,6 +93,7 @@ public class PlayerMovement2D : MonoBehaviour
         else
         {
             offset = new Vector2(transform.localPosition.x, transform.localPosition.y + 2f);
+            _playerAnimation.SetBool("Walking", false);
         }
 
 
@@ -106,7 +111,7 @@ public class PlayerMovement2D : MonoBehaviour
         if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
         {
             Vector2 movement = new Vector2(0, 0);
-
+            _playerAnimation.SetTrigger("Jump");
             if (_jumpEnabled)
             {
                 rb.AddForce(Vector2.up * _jumpHeight);

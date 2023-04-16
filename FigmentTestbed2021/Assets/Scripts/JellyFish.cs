@@ -65,7 +65,7 @@ public class JellyFish : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            collision.GetComponent<CorePlayerScript>().TakeDamage(_damage);
+            collision.GetComponent<CorePlayerScript>().TakeDamage(_damage, gameObject.layer);
         }
     }
 }

@@ -8,36 +8,40 @@ public class Cinematics : MonoBehaviour
     public List<GameObject> Scenes = new List<GameObject>();
     public GameObject Player;
 
-    private bool End;
+    public bool _startScene;
+
+    public bool End;
 
     private void Start()
     {
-        StartCoroutine(PlayScenes());
+        if (_startScene) { StartCoroutine(PlayScenes()); }
     }
 
     private void Update()
     {
-        if (FigmentInput.GetButtonUp(FigmentInput.FigmentButton.LeftButton))
+        if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.LeftButton))
         {
-            Player.GetComponent<PlayerMovement2D>().enabled = true;
-            this.transform.parent.gameObject.SetActive(false);
-            Destroy(gameObject);
+            EndScene();
         }
-        else if (FigmentInput.GetButtonUp(FigmentInput.FigmentButton.RightButton))
+        else if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.RightButton))
         {
-            Player.GetComponent<PlayerMovement2D>().enabled = true;
-            this.transform.parent.gameObject.SetActive(false);
-            Destroy(gameObject);
+            EndScene();
         }
         else if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
         {
-            Player.GetComponent<PlayerMovement2D>().enabled = true;
-            this.transform.parent.gameObject.SetActive(false);
-            Destroy(gameObject);
+            EndScene();
         }
     }
 
-    IEnumerator PlayScenes()
+    void EndScene()
+    {
+        Player.GetComponent<PlayerMovement2D>().enabled = true;
+        gameObject.SetActive(false);
+        End = true;
+        this.transform.parent.gameObject.SetActive(false);
+    }
+
+    public IEnumerator PlayScenes()
     {
         foreach (GameObject scene in Scenes)
         {
@@ -55,5 +59,6 @@ public class Cinematics : MonoBehaviour
         yield return new WaitForSeconds(2f);
         this.transform.parent.gameObject.SetActive(false);
         Player.GetComponent<PlayerMovement2D>().enabled = true;
+        End = true;
     }
 }

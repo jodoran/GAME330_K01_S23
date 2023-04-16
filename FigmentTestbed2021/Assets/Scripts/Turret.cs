@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Turret : MonoBehaviour
 {
+    public GameObject InteractText;
     public ParticleSystem Bullet;
     public Transform _turretSeat;
 
@@ -31,6 +32,7 @@ public class Turret : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
+            InteractText.SetActive(true);
             collision.transform.position = _turretSeat.position;
             collision.GetComponent<PlayerMovement2D>().DisableJump();
             collision.GetComponent<PlayerMovement2D>()._turretActive = true;
@@ -46,6 +48,7 @@ public class Turret : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
+            InteractText.SetActive(false);
             collision.GetComponent<PlayerMovement2D>().EnableJump();
             collision.GetComponent<PlayerMovement2D>()._turretActive = false;
             _reset = false;
