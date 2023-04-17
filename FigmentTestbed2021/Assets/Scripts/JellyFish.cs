@@ -65,7 +65,15 @@ public class JellyFish : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            collision.GetComponent<CorePlayerScript>().TakeDamage(_damage);
+            collision.GetComponent<CorePlayerScript>().TakeDamage(_damage, gameObject.layer);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+            collision.GetComponent<CorePlayerScript>().TakeDamage(_damage, gameObject.layer);
         }
     }
 }
