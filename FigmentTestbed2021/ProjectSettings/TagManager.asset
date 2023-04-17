@@ -12,6 +12,7 @@ TagManager:
   - GroundChecker
   - Wall
   - AboveWater
+  - Ground
   layers:
   - Default
   - TransparentFX

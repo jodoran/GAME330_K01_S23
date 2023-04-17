@@ -63,6 +63,16 @@ public class CorePlayerScript : MonoBehaviour
         }
     }
 
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "KillZone")
+        {
+            int _elay = collision.gameObject.layer;
+            TakeDamage(collision.gameObject.GetComponent<KillZone>()._damage, _elay);
+        }
+    }
+
+
     public void TakeDamage(int DamageTaken, int _elay)
     {
         if (_immune == false)

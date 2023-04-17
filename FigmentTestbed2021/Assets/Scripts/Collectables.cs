@@ -7,6 +7,7 @@ public class Collectables : MonoBehaviour
     public float _maxY;
     public float _minY;
     bool UpDown;
+    bool Collected;
 
     public AudioSource CollectedSound;
 
@@ -33,8 +34,9 @@ public class Collectables : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Player")
+        if(collision.tag == "Player" && Collected == false)
         {
+            Collected = true;
             collision.GetComponent<CorePlayerScript>()._collectableCount++;
             collision.GetComponent<CorePlayerScript>().SetCollectedCount();
             CollectedSound.Play();

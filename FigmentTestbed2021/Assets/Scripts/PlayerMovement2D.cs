@@ -24,6 +24,7 @@ public class PlayerMovement2D : MonoBehaviour
     bool _rightMovement;
     bool _leftMovement;
 
+    public AudioSource LandSoundEffect;
     public AudioSource JumpSoundEffect;
     public GameObject Camera;
     public Transform _respawnPoint;
@@ -31,6 +32,7 @@ public class PlayerMovement2D : MonoBehaviour
 
     Rigidbody2D rb;
     bool _collisionCheck;
+    bool _switchGrounded;
     SpriteRenderer _playerSprite;
     Animator _playerAnimation;
 
@@ -144,10 +146,24 @@ public class PlayerMovement2D : MonoBehaviour
         }
 
         Camera.transform.localPosition = Vector2.Lerp(Camera.transform.localPosition, offset, 3f * Time.deltaTime);
+    }
 
-        if (Physics2D.Linecast(transform.position, Vector2.down * .1f, ground))
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Ground" && _switchGrounded == false 
+            || collision.gameObject.tag == "Wall" && _switchGrounded == false)
         {
-            // _grounded = true;
+            LandSoundEffect.Play();
+            _switchGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Wall")
+        {
+            _switchGrounded = false;
         }
     }
 
@@ -162,6 +178,7 @@ public class PlayerMovement2D : MonoBehaviour
         {
             _jumpEnabled = false;
         }
+
     }
 
     private void OnTriggerExit2D(Collider2D collision)
