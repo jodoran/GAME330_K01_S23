@@ -117,6 +117,7 @@ public class CorePlayerScript : MonoBehaviour
             {
                 EndCinematic.transform.parent.gameObject.SetActive(true);
                 StartCoroutine(EndCinematic.GetComponent<Cinematics>().PlayScenes());
+                StartCoroutine(EndCinematic.GetComponent<Cinematics>().SetSkip());
             }
 
             _gameEnd = true;

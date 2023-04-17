@@ -8,28 +8,38 @@ public class Cinematics : MonoBehaviour
     public List<GameObject> Scenes = new List<GameObject>();
     public GameObject Player;
 
+    public GameObject SkipText;
+    private bool _skipActive;
+
     public bool _startScene;
 
     public bool End;
 
     private void Start()
     {
-        if (_startScene) { StartCoroutine(PlayScenes()); }
+        if (_startScene) 
+        { 
+            StartCoroutine(PlayScenes());
+            StartCoroutine(SetSkip());
+        }
     }
 
     private void Update()
     {
-        if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.LeftButton))
+        if (_skipActive == true)
         {
-            EndScene();
-        }
-        else if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.RightButton))
-        {
-            EndScene();
-        }
-        else if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
-        {
-            EndScene();
+            if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.LeftButton))
+            {
+                EndScene();
+            }
+            else if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.RightButton))
+            {
+                EndScene();
+            }
+            else if (FigmentInput.GetButtonDown(FigmentInput.FigmentButton.ActionButton))
+            {
+                EndScene();
+            }
         }
     }
 
@@ -57,8 +67,16 @@ public class Cinematics : MonoBehaviour
         Image Background = this.transform.GetComponentInParent<Image>();
         Background.CrossFadeColor(Color.clear, 2f, false, true);
         yield return new WaitForSeconds(2f);
+        SkipText.SetActive(false);
         this.transform.parent.gameObject.SetActive(false);
         Player.GetComponent<PlayerMovement2D>().enabled = true;
         End = true;
+    }
+
+    public IEnumerator SetSkip()
+    {
+        yield return new WaitForSeconds(3);
+        _skipActive = true;
+        SkipText.SetActive(true);
     }
 }
