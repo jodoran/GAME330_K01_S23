@@ -35,6 +35,7 @@ public class CorePlayerScript : MonoBehaviour
     {
         SetCollectedCount();
         _playerAnimation = GetComponent<Animator>();
+        Physics2D.IgnoreLayerCollision(layer1: gameObject.layer, layer2: 9, false);
     }
 
     private void Update()
