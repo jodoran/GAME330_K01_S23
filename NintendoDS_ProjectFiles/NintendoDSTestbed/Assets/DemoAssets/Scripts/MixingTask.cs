@@ -58,7 +58,6 @@ public class MixingTask : MonoBehaviour, IDSTapListener
 
     public void OnScreenTapDown(Vector2 tapPosition)
     {
-
         if (DSTapRouter.RectangleContainsDSPoint(GetComponent<RectTransform>(), tapPosition))
         {
             if (PointsClicked < PointList.Count)
@@ -81,19 +80,17 @@ public class MixingTask : MonoBehaviour, IDSTapListener
         OnScreenTapDown(tapPosition);
     }
 
-    public void OnScreenTapUp(Vector2 tapPosition)
-    {
-        Debug.Log("ScreenTapUp at " + tapPosition);
-    }
-
+    public void OnScreenTapUp(Vector2 tapPosition) { }
 
     void ModifyProgress()
     {
-        if(QualityBar.value < MinQuality)
+        if (QualityBar.value < MinQuality)
         {
-            float progressBars = 100/ (PointList.Count - 1);
-            Progress -= progressBars / 100;
-            Debug.Log(progressBars);
+            Progress -= 0.1f;
+        }
+        else
+        {
+            Progress += 0.02f;
         }
         ProgressBar.value = Progress;
     }
