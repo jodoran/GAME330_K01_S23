@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 //Class calls AddingTask function to SetPlateHeld on interaction down with its set object
 public class AddingPlateInfo : MonoBehaviour, IDSTapListener
@@ -24,6 +23,6 @@ public class AddingPlateInfo : MonoBehaviour, IDSTapListener
         }
     }
 
-    public void OnScreenDrag(Vector2 tapPosition){ }
-    public void OnScreenTapUp(Vector2 tapPosition){ }
+    public void OnScreenDrag(Vector2 tapPosition){ } //Not Used
+    public void OnScreenTapUp(Vector2 tapPosition){ } //Not Used
 }
