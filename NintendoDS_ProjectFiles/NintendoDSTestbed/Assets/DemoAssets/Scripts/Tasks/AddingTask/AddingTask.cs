@@ -55,10 +55,12 @@ public class AddingTask : MonoBehaviour, IDSTapListener
     //Objective & Info Variables
     bool PlateHeld;
     int PlatesEmptied;
+    GameObject TaskManager;
 
     //Base Function
     private void Start() 
     {
+        TaskManager = GameObject.Find("TaskManager");
         //Sets Color Dictionary to be pulled from
         SetIngredientDictionary();
         //Randomizes the plate colors order for task objective
@@ -105,15 +107,14 @@ public class AddingTask : MonoBehaviour, IDSTapListener
     {
         if (rectOverlaps(PlateEquipped.PlatePosition, Bowl.rectTransform)) //Overlap Check
         {
-            if (GetBaseColor(PlateEquipped.PlateColor) == GetBaseColor(PlateColorOrder[PlatesEmptied])) //Color Check
+            if (GetBaseColor(PlateEquipped.PlateColor) != GetBaseColor(PlateColorOrder[PlatesEmptied])) //Color Check
             {
-                ProgressBar.value += .02f;
-                return true; 
+                ProgressBar.value -= .1f;
+                return false;
             }
             else
             {
-                ProgressBar.value -= .1f;
-                return false; 
+                return true; 
             }
         }
         else
@@ -144,6 +145,10 @@ public class AddingTask : MonoBehaviour, IDSTapListener
             {
                 Bowl.color = PlateColorOrder[PlatesEmptied];
                 SetColorIndicator(Bowl.color);
+            }
+            else
+            {
+                TaskManager.GetComponent<TaskManager>().TaskComplete = true;
             }
         }
     }

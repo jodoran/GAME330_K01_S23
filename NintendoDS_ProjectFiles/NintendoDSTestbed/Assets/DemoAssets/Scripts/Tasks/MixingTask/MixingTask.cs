@@ -19,10 +19,12 @@ public class MixingTask : MonoBehaviour, IDSTapListener
     private int PointsClicked = 0;
     private float Progress = 1;
     private float Quality = 0;
+    private GameObject TaskManager;
 
     private void Start()
     {
         Point = this.GetComponent<Image>();
+        TaskManager = GameObject.Find("TaskManager");
 
         float angle = 0;
         float AngleIntervals = 360/ Points;
@@ -69,9 +71,8 @@ public class MixingTask : MonoBehaviour, IDSTapListener
             }
             else if(PointsClicked == PointList.Count)
             {
-                Point.gameObject.SetActive(false);
                 ModifyProgress();
-                QualityBar.transform.parent.gameObject.SetActive(false);
+                TaskManager.GetComponent<TaskManager>().TaskComplete = true;
             }
         }
     }
@@ -88,12 +89,8 @@ public class MixingTask : MonoBehaviour, IDSTapListener
         if (QualityBar.value < MinQuality)
         {
             Progress -= 0.1f;
+            ProgressBar.value = Progress;
         }
-        else
-        {
-            Progress += 0.02f;
-        }
-        ProgressBar.value = Progress;
     }
 
     void SetPoint()
