@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 /// <summary>
 /// Fetches each color from color list in inspector re-assigning the colors randomly to set the order of plates that need to be added.
@@ -12,7 +13,7 @@ using UnityEngine.UI;
 /// While if plate is released and isn't over the bowl it decreases the quality value and resets the plate.
 /// Upon all plates being added marks task as complete. 
 /// </summary>
- 
+
 //Plate Info containing variables used to describe the plate object
 class PlateInfo
 {
@@ -37,7 +38,9 @@ public struct ColorValue
 public class AddingTask : MonoBehaviour, IDSTapListener
 {
     Dictionary<Vector3, string> ColorValues = new Dictionary<Vector3, string>();
-        
+
+    Dictionary<int, GameObject> PlateObjects = new Dictionary<int, GameObject>(); 
+
     //Object Variables
     public Image Bowl;
     public Text Instructions;
@@ -54,6 +57,7 @@ public class AddingTask : MonoBehaviour, IDSTapListener
 
     //Objective & Info Variables
     bool PlateHeld;
+    int PlateNum;
     int PlatesEmptied;
     GameObject TaskManager;
 
@@ -68,10 +72,13 @@ public class AddingTask : MonoBehaviour, IDSTapListener
         //Sets the instructions to the first plates values
         Bowl.color = PlateColorOrder[PlatesEmptied];
         SetColorIndicator(Bowl.color);
+        StartCoroutine(SetPlateDictionary());
     }
 
     //IDSTapListener Functions
-    public void OnScreenTapDown(Vector2 tapPosition) { } //Has no functionality
+    public void OnScreenTapDown(Vector2 tapPosition) {
+
+    } 
 
     public void OnScreenDrag(Vector2 tapPosition) //Gets Mouse Drag
     {
@@ -87,11 +94,119 @@ public class AddingTask : MonoBehaviour, IDSTapListener
         {
             ResetPlate(CheckPlatePos());
         }
+        PlateObjects[PlateNum].gameObject.GetComponent<AddingPlateInfo>().SetPlateHeldInParent();
     }
 
+    public void Update()
+    {
+
+        /* uses the d-pad
+        float axisValue = Input.GetAxisRaw("Horizontal");
+        bool rightInput = false;
+        bool leftInput = false;
+        rightInput = axisValue > 0.1f;
+        leftInput = axisValue < -0.1f;
+
+        if (Input.GetButtonDown("Horizontal"))
+        {
+            if (leftInput && PlateNum < PlateObjects.Count - 1)
+            {
+                PlateEquipped.PlateObject.transform.GetChild(0).gameObject.SetActive(true);
+                PlateNum++;
+                PlateObjects[PlateNum].gameObject.GetComponent<AddingPlateInfo>().SetPlateHeldInParent();
+            }
+            else if (rightInput && PlateNum > 0)
+            {
+                PlateEquipped.PlateObject.transform.GetChild(0).gameObject.SetActive(true);
+                PlateNum--;
+                PlateObjects[PlateNum].gameObject.GetComponent<AddingPlateInfo>().SetPlateHeldInParent();
+            }
+        }
+        */
+
+        if (Input.GetButtonDown("Fire1") && PlateObjects[0].activeSelf)
+        {
+            if (PlateHeld) //Checks if plate is being held & Calls Reset Plate function
+            {
+                if (PlateEquipped.PlateObject == PlateObjects[0])
+                {
+                    ResetPlate(CheckPlateColor());
+                }
+                else
+                {
+                    PlateEquipped.PlateObject.transform.GetChild(0).gameObject.SetActive(true);
+                    PlateObjects[0].gameObject.GetComponent<AddingPlateInfo>().SetPlateHeldInParent();
+                }
+            }
+        }
+        if (Input.GetButtonDown("Fire3") && PlateObjects[1].activeSelf)
+        {
+            if (PlateHeld) //Checks if plate is being held & Calls Reset Plate function
+            {
+                if (PlateEquipped.PlateObject == PlateObjects[1])
+                {
+                    ResetPlate(CheckPlateColor());
+                }
+                else
+                {
+                    PlateEquipped.PlateObject.transform.GetChild(0).gameObject.SetActive(true);
+                    PlateObjects[1].gameObject.GetComponent<AddingPlateInfo>().SetPlateHeldInParent();
+                }
+            }
+        }
+        if (Input.GetButtonDown("Jump") && PlateObjects[2].activeSelf)
+        {
+            if (PlateHeld) //Checks if plate is being held & Calls Reset Plate function
+            {
+                if (PlateEquipped.PlateObject == PlateObjects[2])
+                {
+                    ResetPlate(CheckPlateColor());
+                }
+                else
+                {
+                    PlateEquipped.PlateObject.transform.GetChild(0).gameObject.SetActive(true);
+                    PlateObjects[2].gameObject.GetComponent<AddingPlateInfo>().SetPlateHeldInParent();
+                }
+            }
+        }
+        if (Input.GetButtonDown("Fire2") && PlateObjects[3].activeSelf)
+        {
+            if (PlateHeld) //Checks if plate is being held & Calls Reset Plate function
+            {
+                if (PlateEquipped.PlateObject == PlateObjects[3])
+                {
+                    ResetPlate(CheckPlateColor());
+                }
+                else
+                {
+                    PlateEquipped.PlateObject.transform.GetChild(0).gameObject.SetActive(true);
+                    PlateObjects[3].gameObject.GetComponent<AddingPlateInfo>().SetPlateHeldInParent();
+                }
+            }
+        }
+    }
+
+    IEnumerator SetPlateDictionary()
+    {
+        yield return new WaitForSeconds(0.1f);
+        PlateObjects[PlateNum].gameObject.GetComponent<AddingPlateInfo>().SetPlateHeldInParent();
+    }
+
+    public void SetPlateObjects(int ObjectNum, GameObject PlateObject)
+    {
+        PlateObjects.Add(ObjectNum, PlateObject);
+    }
+
+    public void ChangeActivePlateColor()
+    {
+        if (PlateEquipped.PlateObject != null)
+        {
+            PlateEquipped.PlateObject.transform.GetChild(0).gameObject.SetActive(true);
+        }
+    }
 
     //Public Functions
-    public void SetPlateHeld(GameObject plateObject, RectTransform platePosition, Vector3 offset, Color color) //Sets the current plate in hand
+    public void SetPlateHeld(GameObject plateObject, RectTransform platePosition, Vector3 offset, Color color, int plateNum) //Sets the current plate in hand
     {
         PlateEquipped.PlateObject = plateObject;
         PlateEquipped.PlateOffset = offset;
@@ -99,27 +214,35 @@ public class AddingTask : MonoBehaviour, IDSTapListener
         PlateEquipped.PlatePosition = platePosition;
         PlateEquipped.PlateColor = color;
         PlateHeld = true;
+
+        PlateNum = plateNum;
     }
 
 
     //Private Functions
     bool CheckPlatePos() //Checks if Plate in hand is overlapping the bowl and correct color
     {
+        PlateEquipped.PlateObject.transform.GetChild(0).gameObject.SetActive(true);
         if (rectOverlaps(PlateEquipped.PlatePosition, Bowl.rectTransform)) //Overlap Check
         {
-            if (GetBaseColor(PlateEquipped.PlateColor) != GetBaseColor(PlateColorOrder[PlatesEmptied])) //Color Check
-            {
-                ProgressBar.value -= .1f;
-                return false;
-            }
-            else
-            {
-                return true; 
-            }
+            return CheckPlateColor(); //Color Check
         }
         else
         {
             return false;
+        }
+    }
+
+    bool CheckPlateColor()
+    {
+        if (GetBaseColor(PlateEquipped.PlateColor) != GetBaseColor(PlateColorOrder[PlatesEmptied])) //Color Check
+        {
+            ProgressBar.value -= .1f;
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 
@@ -132,7 +255,7 @@ public class AddingTask : MonoBehaviour, IDSTapListener
         PlateEquipped.PlatePosition.anchoredPosition = currPosition;
 
         //Sets Plate to not being held
-        PlateHeld = false;
+        //PlateHeld = false;
 
         if (added) //Checks if plate was over bowl
         {
@@ -144,6 +267,7 @@ public class AddingTask : MonoBehaviour, IDSTapListener
             if (PlatesEmptied < PlateColorOrder.Count)
             {
                 Bowl.color = PlateColorOrder[PlatesEmptied];
+                PlateObjects[PlateNum].gameObject.GetComponent<AddingPlateInfo>().SetPlateHeldInParent();
                 SetColorIndicator(Bowl.color);
             }
             else

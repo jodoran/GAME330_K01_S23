@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 07b5e427c20c30b4493be962adb5afc4
   - enabled: 1
-    path: Assets/Scenes/NintendoDSTestbed.unity
+    path: Assets/Scenes/OldGame.unity
     guid: c39ad8e1dfd471c428f093dc297b192d
   m_configObjects: {}
