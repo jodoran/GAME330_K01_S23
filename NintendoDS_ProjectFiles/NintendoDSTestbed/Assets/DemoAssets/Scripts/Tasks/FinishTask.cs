@@ -50,6 +50,14 @@ public class FinishTask : MonoBehaviour, IDSTapListener
     private void Update()
     {
         Delay += Time.deltaTime;
+
+        if (Input.anyKeyDown)
+        {
+            if (Delay >= 1.5f)
+            {
+                ChangeScene(); 
+            }
+        }
     }
 
     public void OnScreenTapDown(Vector2 tapPosition) { }

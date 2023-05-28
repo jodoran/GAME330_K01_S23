@@ -50,7 +50,14 @@ public class IngredientData : MonoBehaviour
         }
         else if (_health == 0)
         {
-            Instantiate(SplitParticle, new Vector3(transform.position.x, transform.position.y, 11f), Quaternion.identity);
+            if (transform.position.x > 0)
+            {
+                Instantiate(SplitParticle, new Vector3(transform.position.x, transform.position.y, 11f), Quaternion.identity);
+            }
+            else
+            {
+                Instantiate(SplitParticle, new Vector3(transform.position.x, transform.position.y, 23f), Quaternion.identity);
+            }
             Destroy(gameObject);
         }
     }

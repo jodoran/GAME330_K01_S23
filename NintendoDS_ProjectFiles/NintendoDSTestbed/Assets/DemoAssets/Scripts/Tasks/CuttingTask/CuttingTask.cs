@@ -94,37 +94,40 @@ public class CuttingTask : MonoBehaviour
             {
                 SwitchButtonSigns();
             }
-            
+
 
             if (_letterButtonPress && _arrowButtonPress)
             {
                 TaskProgressBar.value += 1 / _totalSpawned;
                 _cutIngredients += 1;
-                CutIngredientNums.Add(_currentTask);
-                ActiveIngredientNums.Remove(_currentTask);
-                Keys _key;
-                _key.Arrow = null;
-                IngredientKeys.TryGetValue(_currentTask, out _key);
-                ActiveIngredients.RemoveAt(_currentTask);
-                IngredientKeys.Remove(_currentTask);
-                if (_currentTask < _totalSpawned)
+                if (_cutIngredients! < _totalSpawned)
                 {
-                    if (ActiveIngredientNums.Count == 0)
+                    CutIngredientNums.Add(_currentTask);
+                    ActiveIngredientNums.Remove(_currentTask);
+                    Keys _key;
+                    _key.Arrow = null;
+                    IngredientKeys.TryGetValue(_currentTask, out _key);
+                    ActiveIngredients.Remove(_key.Ingredient);
+                    IngredientKeys.Remove(_currentTask);
+                    if (_currentTask < _totalSpawned)
                     {
-                        _currentTask = 0;
+                        if (ActiveIngredientNums.Count == 0)
+                        {
+                            _currentTask = 0;
+                        }
+                        else
+                        {
+                            _currentTask = ActiveIngredientNums[0];
+                        }
                     }
                     else
                     {
-                        _currentTask = ActiveIngredientNums[0];
+                        _currentTask = 0;
                     }
+                    SwitchButtonSigns();
+                    _letterButtonPress = false;
+                    _arrowButtonPress = false;
                 }
-                else
-                {
-                    _currentTask = 0;
-                }
-                SwitchButtonSigns();
-                _letterButtonPress = false;
-                _arrowButtonPress = false;
             }
 
             if (_initSpawnCount > 0)
@@ -137,6 +140,7 @@ public class CuttingTask : MonoBehaviour
                     _spawnTimer = 0;
                 }
             }
+
         }
         else
         {
@@ -253,6 +257,7 @@ public class CuttingTask : MonoBehaviour
                 IngredientKeys.TryGetValue(i, out _key);
                 _spawnObject.GetComponent<IngredientData>().SetValues(_key.Letter.name, _key.Arrow.name, _key.Health, _key.IngredientNum);
                 _key.Ingredient = _spawnObject;
+                IngredientKeys[i] = _key;
             }
         }
     }
@@ -282,6 +287,7 @@ public class CuttingTask : MonoBehaviour
                 IngredientKeys.TryGetValue(i, out _key);
                 _spawnObject.GetComponent<IngredientData>().SetValues(_key.Letter.name, _key.Arrow.name, _key.Health, _key.IngredientNum);
                 _key.Ingredient = _spawnObject;
+                IngredientKeys[i] = _key;
             }
         }
     }

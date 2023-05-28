@@ -15,6 +15,7 @@ public class TaskManager : MonoBehaviour
     public List<Task> Tasks;
     public List<GameObject> Stars;
     public Slider ProgressBar;
+    public GameObject MainAudioTrack;
     [HideInInspector]
     public bool TaskComplete;
     [HideInInspector]
@@ -34,6 +35,11 @@ public class TaskManager : MonoBehaviour
         TaskNum++;
         Tasks[TaskNum].TopScreen.SetActive(true);
         Tasks[TaskNum].BottomScreen.SetActive(true);
+
+        if(TaskNum >= Tasks.Count)
+        {
+            MainAudioTrack.SetActive(false);
+        }
     }
 
     public void JumpToEnd()
@@ -43,6 +49,7 @@ public class TaskManager : MonoBehaviour
         TaskNum = Tasks.Count - 1;
         Tasks[TaskNum].TopScreen.SetActive(true);
         Tasks[TaskNum].BottomScreen.SetActive(true);
+        this.enabled = false;
     }
 
     private void FixedUpdate()

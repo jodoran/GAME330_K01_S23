@@ -133,7 +133,7 @@ public class NewAddingTask : MonoBehaviour
         int _indgredientNum = Ingredient.GetComponent<IngredientGravity>()._ingredientNum;
 
         GameObject _ingredient = IngredientCatalog[_indgredientNum];
-        GameObject _spawnObject = Instantiate(_ingredient, new Vector3(x, Bar.transform.position.y, 0), Quaternion.identity, Bar.parent);
+        GameObject _spawnObject = Instantiate(_ingredient, new Vector3(x, Bar.transform.position.y, 1), Quaternion.identity, Bar.parent);
         _spawnObject.transform.localPosition = new Vector3(x, _spawnObject.transform.localPosition.y, 1);
         _spawnObject.GetComponent<IngredientGravity>().Source = gameObject;
 

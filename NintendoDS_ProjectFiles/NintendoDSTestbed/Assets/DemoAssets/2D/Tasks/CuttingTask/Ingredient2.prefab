@@ -117,7 +117,7 @@ MonoBehaviour:
   HalfHealthSprite: {fileID: 21300000, guid: 13426d092aa45da4aacdc0634d56fc09, type: 3}
   SplitParticle: {fileID: 2718621230722474455, guid: d36532a5491ec5a4b9f602a82d5b4387,
     type: 3}
-  _gravity: 3
+  _gravity: 6
   _ingredientNum: 1
   Source: {fileID: 0}
   _letterKey: 
