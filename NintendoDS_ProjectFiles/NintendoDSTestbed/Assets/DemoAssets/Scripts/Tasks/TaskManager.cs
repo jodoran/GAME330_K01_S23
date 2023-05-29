@@ -24,6 +24,7 @@ public class TaskManager : MonoBehaviour
 
     private void Start()
     {
+        ProgressBar.gameObject.SetActive(true);
         Tasks[TaskNum].TopScreen.SetActive(true);
         Tasks[TaskNum].BottomScreen.SetActive(true);
     }
@@ -52,8 +53,10 @@ public class TaskManager : MonoBehaviour
         this.enabled = false;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
+        Timer += Time.deltaTime;
+
         if (TaskComplete)
         {
             ChangeTask();
@@ -62,33 +65,34 @@ public class TaskManager : MonoBehaviour
 
         if (ProgressBar.value > 0)
         {
-            switch (ProgressBar.value)
+            if (ProgressBar.value >= 1)
             {
-                case 1:
-                    Stars[0].SetActive(true);
-                    Stars[1].SetActive(true);
-                    Stars[2].SetActive(true);
-                    break;
-                case 0.75f:
-                    Stars[0].SetActive(false);
-                    Stars[1].SetActive(true);
-                    Stars[2].SetActive(true);
-                    break;
-                case 0.35f:
-                    Stars[0].SetActive(false);
-                    Stars[1].SetActive(false);
-                    Stars[2].SetActive(true);
-                    break;
+                Stars[0].SetActive(true);
+                Stars[1].SetActive(true);
+                Stars[2].SetActive(true);
+            }
+            else if (ProgressBar.value >= .75f)
+            {
+                Stars[0].SetActive(false);
+                Stars[1].SetActive(true);
+                Stars[2].SetActive(true);
+            }
+            else if (ProgressBar.value >= .35f)
+            {
+                Stars[0].SetActive(false);
+                Stars[1].SetActive(false);
+                Stars[2].SetActive(true);
+            }
+            else
+            {
+                Stars[0].SetActive(false);
+                Stars[1].SetActive(false);
+                Stars[2].SetActive(false);
             }
         }
         else
         {
             JumpToEnd();
         }
-    }
-
-    private void Update()
-    {
-        Timer += Time.deltaTime;
     }
 }

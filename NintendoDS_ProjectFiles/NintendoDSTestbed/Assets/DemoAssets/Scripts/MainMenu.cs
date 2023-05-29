@@ -9,16 +9,20 @@ public class MainMenu : MonoBehaviour, IDSTapListener
     public RectTransform PlayButton;
     public RectTransform QuitButton;
 
+    public AudioSource ButtonClickAudio;
+
     // Called Once when Screen is tapped down on
     public void OnScreenTapDown(Vector2 tapPosition)
     {
         //Checks the position of the button and compares it to the tapped position
         if (DSTapRouter.RectangleContainsDSPoint(PlayButton, tapPosition))
         {
+            ButtonClickAudio.Play();
             Play(); //Calls Play if Play Button is tapped on
         }
         else if (DSTapRouter.RectangleContainsDSPoint(QuitButton, tapPosition))
         {
+            ButtonClickAudio.Play();
             Quit(); //Calls Quit if Quit Button is tapped on
         }
     }
