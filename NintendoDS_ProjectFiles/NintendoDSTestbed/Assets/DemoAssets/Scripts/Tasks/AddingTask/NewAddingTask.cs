@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.Experimental.GlobalIllumination;
 
-
-
-public class NewAddingTask : MonoBehaviour
+public class NewAddingTask : MonoBehaviour, IDSTapListener
 {
     public Slider ProgressBar;
     public Slider TaskProgressBar;
     public GameObject TaskManager;
+
+    public RectTransform PadModeButton;
+    public RectTransform CursorModeButton;
     public Image Bowl;
     public float _bowlBounds;
 
@@ -23,10 +25,13 @@ public class NewAddingTask : MonoBehaviour
 
     List<GameObject> ActiveIngredients = new List<GameObject>();
 
+    public float _movementSpeed;
     public int _totalIngredientsNeeded;
     public int _initSpawnCount = 3;
     public float _spawnDelay = 1;
 
+    bool CursorMode = false;
+    bool PadMode = true;
     float _bowlX = 0;
     float _spawnTimer;
 
@@ -38,29 +43,32 @@ public class NewAddingTask : MonoBehaviour
 
     public void Update()
     {
-        float axisValue = Input.GetAxisRaw("Horizontal");
-        bool rightInput = false;
-        bool leftInput = false;
-        rightInput = axisValue > 0.1f;
-        leftInput = axisValue < -0.1f;
-
-        if (Input.GetButton("Horizontal"))
+        if (PadMode)
         {
-            if (rightInput && _bowlX < _bowlBounds)
+            float axisValue = Input.GetAxisRaw("Horizontal");
+            bool rightInput = false;
+            bool leftInput = false;
+            rightInput = axisValue > 0.1f;
+            leftInput = axisValue < -0.1f;
+
+            if (Input.GetButton("Horizontal"))
             {
-                const float SNAP_SPEED = 24.0f;
-                _bowlX++;
-                Vector2 currPosition = Bowl.rectTransform.anchoredPosition;
-                currPosition.x += (_bowlX - currPosition.x) * SNAP_SPEED * Time.deltaTime;
-                Bowl.rectTransform.anchoredPosition = currPosition;
-            }
-            if (leftInput && _bowlX > -_bowlBounds)
-            {
-                const float SNAP_SPEED = 24.0f;
-                _bowlX--;
-                Vector2 currPosition = Bowl.rectTransform.anchoredPosition;
-                currPosition.x += (_bowlX - currPosition.x) * SNAP_SPEED * Time.deltaTime;
-                Bowl.rectTransform.anchoredPosition = currPosition;
+                if (rightInput && _bowlX < _bowlBounds)
+                {
+                    const float SNAP_SPEED = 24.0f;
+                    _bowlX += _movementSpeed;
+                    Vector2 currPosition = Bowl.rectTransform.anchoredPosition;
+                    currPosition.x += (_bowlX - currPosition.x) * SNAP_SPEED * Time.deltaTime;
+                    Bowl.rectTransform.anchoredPosition = currPosition;
+                }
+                if (leftInput && _bowlX > -_bowlBounds)
+                {
+                    const float SNAP_SPEED = 24.0f;
+                    _bowlX -= _movementSpeed;
+                    Vector2 currPosition = Bowl.rectTransform.anchoredPosition;
+                    currPosition.x += (_bowlX - currPosition.x) * SNAP_SPEED * Time.deltaTime;
+                    Bowl.rectTransform.anchoredPosition = currPosition;
+                }
             }
         }
 
@@ -75,6 +83,25 @@ public class NewAddingTask : MonoBehaviour
             }
         }
     }
+
+    public void OnScreenTapDown(Vector2 tapPosition) 
+    {
+        if (CursorMode)
+        {
+            MovePlateWithCursor(Bowl.GetComponent<RectTransform>(), tapPosition, 120);
+        }
+    }
+
+    public void OnScreenDrag(Vector2 tapPosition)
+    {
+        if (CursorMode)
+        {
+            MovePlateWithCursor(Bowl.GetComponent<RectTransform>(), tapPosition, 120);
+        }
+    }
+
+    public void OnScreenTapUp(Vector2 tapPosition) { }
+
 
     private void FixedUpdate()
     {
@@ -148,13 +175,13 @@ public class NewAddingTask : MonoBehaviour
         TaskProgressBar.value += 1f/_totalIngredientsNeeded;
     }
 
-    bool rectOverlaps(RectTransform rectTrans1, RectTransform rectTrans2) //Gets if the 1st RectTransform is overlapping the 2nd RectTransform
+    void MovePlateWithCursor(RectTransform plate, Vector3 cursorPosition, float Xoffset) //Sets plate to position of the cursor
     {
-        // recreates both RectTransforms poitions current position and size
-        Rect rect1 = new Rect(rectTrans1.anchoredPosition.x, rectTrans1.anchoredPosition.y, rectTrans1.rect.width, rectTrans1.rect.height);
-        Rect rect2 = new Rect(rectTrans2.anchoredPosition.x, rectTrans2.anchoredPosition.y, rectTrans2.rect.width, rectTrans2.rect.height);
+        // Gets Mouse position
+        Vector3 currPosition = plate.anchoredPosition;
+        currPosition.x += (cursorPosition.x - (currPosition.x + Xoffset));
 
-        // uses the recreated RectTransforms positions and sizes to check if they are overlapping
-        return rect1.Overlaps(rect2);
+        // Sets plate rect transform to that position
+        plate.anchoredPosition = currPosition;
     }
 }
