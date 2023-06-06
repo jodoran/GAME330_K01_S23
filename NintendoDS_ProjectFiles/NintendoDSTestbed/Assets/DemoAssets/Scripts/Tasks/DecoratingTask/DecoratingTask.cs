@@ -27,6 +27,9 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
     float _icingFilled;
     bool _icingPlaced;
     string _currentStep = "Icing";
+    int _activeObjectNum;
+
+    float checks = 0;
 
     private void Start()
     {
@@ -51,7 +54,7 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
         }
         DrawIcingLineCheck();
 
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < 5; i++)
         {
             DecorationChecks.Add(false);
         }
@@ -78,15 +81,49 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
         }
         else if(_currentStep == "Decorate")
         {
-            for(int i = 0; i < Decorations.Count; i++) 
-            { 
-                if (DSTapRouter.RectangleContainsDSPoint(Decorations[i], tapPosition))
+            if (DSTapRouter.RectangleContainsDSPoint(Decorations[0], tapPosition))
+            {
+                if (DecorationChecks[0] == false)
                 {
-                    if (DecorationChecks[i] == false)
-                    {
-                        _originalPos = Decorations[i].anchoredPosition;
-                        MovePlateWithCursor(Decorations[i], tapPosition, 120, 90);
-                    }
+                    _originalPos = Decorations[0].anchoredPosition;
+                    MovePlateWithCursor(Decorations[0], tapPosition, 120, 90);
+                    _activeObjectNum = 0;
+                }
+            }
+            if (DSTapRouter.RectangleContainsDSPoint(Decorations[1], tapPosition))
+            {
+                if (DecorationChecks[1] == false)
+                {
+                    _originalPos = Decorations[1].anchoredPosition;
+                    MovePlateWithCursor(Decorations[1], tapPosition, 120, 90);
+                    _activeObjectNum = 1;
+                }
+            }
+            if (DSTapRouter.RectangleContainsDSPoint(Decorations[2], tapPosition))
+            {
+                if (DecorationChecks[2] == false)
+                {
+                    _originalPos = Decorations[2].anchoredPosition;
+                    MovePlateWithCursor(Decorations[2], tapPosition, 120, 90);
+                    _activeObjectNum = 2;
+                }
+            }
+            if (DSTapRouter.RectangleContainsDSPoint(Decorations[3], tapPosition))
+            {
+                if (DecorationChecks[3] == false)
+                {
+                    _originalPos = Decorations[3].anchoredPosition;
+                    MovePlateWithCursor(Decorations[3], tapPosition, 120, 90);
+                    _activeObjectNum = 3;
+                }
+            }
+            if (DSTapRouter.RectangleContainsDSPoint(Decorations[4], tapPosition))
+            {
+                if (DecorationChecks[4] == false)
+                {
+                    _originalPos = Decorations[4].anchoredPosition;
+                    MovePlateWithCursor(Decorations[4], tapPosition, 120, 90);
+                    _activeObjectNum = 4;
                 }
             }
         }
@@ -96,14 +133,11 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
     {
         if (_currentStep == "Decorate")
         {
-            for (int i = 0; i < Decorations.Count; i++)
+            if (_activeObjectNum > -1)
             {
-                if (DSTapRouter.RectangleContainsDSPoint(Decorations[i], tapPosition))
+                if (DecorationChecks[_activeObjectNum] == false)
                 {
-                    if (DecorationChecks[i] == false)
-                    {
-                        MovePlateWithCursor(Decorations[i], tapPosition, 120, 90);
-                    }
+                    MovePlateWithCursor(Decorations[_activeObjectNum], tapPosition, 120, 90);
                 }
             }
         }
@@ -118,18 +152,20 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
         }
         else if (_currentStep == "Decorate")
         {
-            for(int i = 0; i < Decorations.Count; i++)
+            if (rectOverlaps(Decorations[_activeObjectNum], DecorationPlacements[_activeObjectNum]))
             {
-                if (rectOverlaps(Decorations[i], DecorationPlacements[i]))
-                {
-                    DecorationChecks[i] = true;
-                }
-                else
-                {
-                    ProgressBar.value -= 0.05f;
-                    Decorations[i].anchoredPosition = _originalPos;
-                }
+                DecorationChecks[_activeObjectNum] = true;
             }
+            else if (rectOverlaps(Decorations[_activeObjectNum], Cake.GetComponent<RectTransform>()))
+            {
+                ProgressBar.value -= 0.05f;
+                Decorations[_activeObjectNum].anchoredPosition = _originalPos;
+            }
+            else
+            {
+                Decorations[_activeObjectNum].anchoredPosition = _originalPos;
+            }
+            _activeObjectNum = -1;
         }
     }
 
@@ -142,7 +178,7 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
         }
         if (_currentStep == "Decorate")
         {
-            float checks = 0;
+            checks = 0;
             for (int i = 0; i < DecorationChecks.Count; i++)
             {
                 if(DecorationChecks[i] == true)
@@ -195,11 +231,6 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
 
     }
 
-    void CheckDecorations()
-    {
-
-    }
-
     void MovePlateWithCursor(RectTransform plate, Vector3 cursorPosition, float Xoffset, float Yoffset) //Sets plate to position of the cursor
     {
         // Gets Mouse position
@@ -213,11 +244,21 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
 
     bool rectOverlaps(RectTransform rectTrans1, RectTransform rectTrans2) //Gets if the 1st RectTransform is overlapping the 2nd RectTransform
     {
+        float xMax = rectTrans2.position.x + 1;
+        float yMax = rectTrans2.position.y + 1;
+        float xMin = rectTrans2.position.x - 1;
+        float yMin = rectTrans2.position.y - 1;
+
+        return rectTrans1.position.x <= xMax && rectTrans1.position.x >= xMin
+            && rectTrans1.position.y <= yMax && rectTrans1.position.y >= yMin;
+
+        /*
         // recreates both RectTransforms poitions current position and size
         Rect rect1 = new Rect(rectTrans1.anchoredPosition.x, rectTrans1.anchoredPosition.y, rectTrans1.rect.width, rectTrans1.rect.height);
         Rect rect2 = new Rect(rectTrans2.anchoredPosition.x, rectTrans2.anchoredPosition.y, rectTrans2.rect.width, rectTrans2.rect.height);
 
         // uses the recreated RectTransforms positions and sizes to check if they are overlapping
         return rect1.Overlaps(rect2);
+        */
     }
 }
