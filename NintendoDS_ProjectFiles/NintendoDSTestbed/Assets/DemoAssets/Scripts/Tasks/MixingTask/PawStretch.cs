@@ -8,6 +8,7 @@ public class PawStretch : MonoBehaviour
     public RectTransform _startPosition;
     public bool mirrorZ = true;
     public Material _armMat;
+    public float width;
     GameObject Line;
 
     private void Update()
@@ -18,8 +19,8 @@ public class PawStretch : MonoBehaviour
         LineRenderer lineRenderer = Line.AddComponent<LineRenderer>();
         lineRenderer.startColor = Color.white;
         lineRenderer.endColor = Color.white;
-        lineRenderer.startWidth = 2f;
-        lineRenderer.endWidth = 2f;
+        lineRenderer.startWidth = width;
+        lineRenderer.endWidth = width;
         lineRenderer.positionCount = 2;
         lineRenderer.useWorldSpace = true;
         lineRenderer.material = _armMat;
