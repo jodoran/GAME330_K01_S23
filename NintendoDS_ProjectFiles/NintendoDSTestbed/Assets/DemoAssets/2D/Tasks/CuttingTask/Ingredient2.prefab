@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 7189243285356308988}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 1}
+  m_LocalScale: {x: 25, y: 25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a83c91ed69bce8e4680e47d15687c4bb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c8424593422bd944184e2bcc107de591, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5e7a6606f3943e48b86e374cb21c8b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HalfHealthSprite: {fileID: 21300000, guid: 13426d092aa45da4aacdc0634d56fc09, type: 3}
+  HalfHealthSprite: {fileID: 21300000, guid: 83991bfe92d1f1f449adbb1c6b2d3abb, type: 3}
   SplitParticle: {fileID: 2718621230722474455, guid: d36532a5491ec5a4b9f602a82d5b4387,
     type: 3}
   _gravity: 6
