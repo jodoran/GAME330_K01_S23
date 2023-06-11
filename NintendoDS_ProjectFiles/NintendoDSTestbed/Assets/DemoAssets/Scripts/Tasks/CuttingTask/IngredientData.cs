@@ -8,7 +8,7 @@ public class IngredientData : MonoBehaviour
     public Sprite HalfHealthSprite;
     public GameObject SplitParticle;
 
-    public float _gravity;
+    float _gravity;
     public int _ingredientNum;
     public GameObject Source;
 
@@ -24,6 +24,7 @@ public class IngredientData : MonoBehaviour
     {
         _arrowSign = Source.GetComponent<CuttingTask>().ArrowSign;
         _letterSign = Source.GetComponent<CuttingTask>().LetterSign;
+        _gravity = Source.GetComponent<CuttingTask>()._fallspeed;
     }
 
     public void SetValues(string LetterKey, string ArrowKey, int Health, int IngredientNum)

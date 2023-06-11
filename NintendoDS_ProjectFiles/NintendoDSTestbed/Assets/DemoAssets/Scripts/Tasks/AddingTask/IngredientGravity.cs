@@ -7,6 +7,7 @@ public class IngredientGravity : MonoBehaviour
     public float _gravity;
     public int _ingredientNum;
     public GameObject Source;
+    public bool GoodOrBad;
 
     RectTransform _objectRectTransform;
     float _yValue = 0;
@@ -26,7 +27,7 @@ public class IngredientGravity : MonoBehaviour
     {
         if (collision.gameObject.name == "Bowl")
         {
-            Source.GetComponent<NewAddingTask>().IngredientEnterBowl(gameObject);
+            Source.GetComponent<NewAddingTask>().IngredientEnterBowl(gameObject, GoodOrBad);
         }
     }
 

@@ -7,6 +7,8 @@ public class MixingTask : MonoBehaviour, IDSTapListener
 {
     public Slider QualityBar;
     public Slider ProgressBar;
+    public AudioSource MixSoundEffect;
+    public AudioSource MissSound;
 
     List<Vector3> PointList = new List<Vector3>();
 
@@ -20,6 +22,8 @@ public class MixingTask : MonoBehaviour, IDSTapListener
     private float Progress = 1;
     private float Quality = 0;
     private GameObject TaskManager;
+    private bool _stiring;
+    private float _timer;
 
     private void Start()
     {
@@ -57,6 +61,17 @@ public class MixingTask : MonoBehaviour, IDSTapListener
                 Point.color = Color.red;
             }
         }
+
+        if (_stiring)
+        {
+            _timer += Time.deltaTime;
+            if(_timer >= 3f)
+            {
+                MixSoundEffect.Stop();
+                _stiring = false;
+                _timer = 0;
+            }
+        }
     }
 
     public void OnScreenTapDown(Vector2 tapPosition)
@@ -68,10 +83,18 @@ public class MixingTask : MonoBehaviour, IDSTapListener
                 SetPoint();
                 Quality = 1;
                 ModifyProgress();
+                if (!_stiring)
+                {
+                    MixSoundEffect.Play();
+                    _stiring = true;
+                }
+                _timer = 0;
             }
             else if(PointsClicked == PointList.Count)
             {
                 ModifyProgress();
+                MixSoundEffect.Stop();
+                _stiring = false;
                 TaskManager.GetComponent<TaskManager>().TaskComplete = true;
             }
         }
@@ -82,13 +105,24 @@ public class MixingTask : MonoBehaviour, IDSTapListener
         OnScreenTapDown(tapPosition);
     }
 
-    public void OnScreenTapUp(Vector2 tapPosition) { }
+    public void OnScreenTapUp(Vector2 tapPosition)
+    {
+        MixSoundEffect.Stop();
+        _stiring = false;
+        _timer = 0;
+    }
 
     void ModifyProgress()
     {
         if (QualityBar.value < MinQuality)
         {
+            MissSound.Play();
             Progress -= 0.1f;
+            ProgressBar.value = Progress;
+        }
+        else if (TaskManager.GetComponent<TaskManager>().HealingEnabled)
+        {
+            Progress += 0.05f;
             ProgressBar.value = Progress;
         }
     }

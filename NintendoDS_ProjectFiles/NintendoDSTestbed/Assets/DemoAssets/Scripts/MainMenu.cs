@@ -28,6 +28,10 @@ public class MainMenu : MonoBehaviour, IDSTapListener
         Main = MenuButtons[0].transform.parent.gameObject;
         Option = OptionButtons[0].transform.parent.gameObject;
         Level = LevelButtons[0].transform.parent.gameObject;
+
+        if (PlayerPrefs.GetInt("NormalComplete", 0) == 1) { LevelButtons[3].SetActive(true); }
+        if (PlayerPrefs.GetInt("EasyComplete", 0) == 1) { LevelButtons[2].SetActive(true); }
+
     }
 
     // Called Once when Screen is tapped down on
@@ -41,12 +45,12 @@ public class MainMenu : MonoBehaviour, IDSTapListener
                 ButtonClickAudio.Play();
                 Play(); //Calls Play if Play Button is tapped on
             }
-            if (DSTapRouter.RectangleContainsDSPoint(MenuButtons[1].GetComponent<RectTransform>(), tapPosition))
+            else if (DSTapRouter.RectangleContainsDSPoint(MenuButtons[2].GetComponent<RectTransform>(), tapPosition))
             {
                 ButtonClickAudio.Play();
                 Quit(); //Calls Quit if Quit Button is tapped on
             }
-            if (DSTapRouter.RectangleContainsDSPoint(MenuButtons[2].GetComponent<RectTransform>(), tapPosition))
+            else if (DSTapRouter.RectangleContainsDSPoint(MenuButtons[1].GetComponent<RectTransform>(), tapPosition))
             {
                 ButtonClickAudio.Play();
                 OpenOptionsMenu();
@@ -57,23 +61,56 @@ public class MainMenu : MonoBehaviour, IDSTapListener
             if (DSTapRouter.RectangleContainsDSPoint(OptionButtons[0].GetComponent<RectTransform>(), tapPosition))
             {
                 ButtonClickAudio.Play();
-                _sliderActive = false;
                 Back();
+                _sliderActive = false;
                 //Calls Quit if Quit Button is tapped on
             }
             if (DSTapRouter.RectangleContainsDSPoint(OptionButtons[1].GetComponent<RectTransform>(), tapPosition))
             {
+                OptionsSetting(true);
                 _sliderActive = true;
                 SelectedButton = 1;
+                OptionsSetting(false);
+                // Gets Mouse position
+                Vector3 currPosition = OptionButtons[1].GetComponent<RectTransform>().position;
+                currPosition.x += (tapPosition.x - (currPosition.x + 120));
+
+                float xDifference = OptionButtons[1].transform.GetChild(1).position.x - OptionButtons[1].transform.GetChild(0).position.x;
+                
+                float finaltapPosition = currPosition.x - OptionButtons[1].transform.GetChild(0).position.x;
+
+                float endValue = xDifference - finaltapPosition;
+                float endPercent = endValue / xDifference;
+                endValue = endPercent + 618;
+                endPercent = +endValue / 19;
+                OptionButtons[1].GetComponent<Slider>().value = endPercent * -1;
             }
             if (DSTapRouter.RectangleContainsDSPoint(OptionButtons[2].GetComponent<RectTransform>(), tapPosition))
             {
+                OptionsSetting(true);
                 _sliderActive = true;
                 SelectedButton = 2;
+                OptionsSetting(false);
+                // Gets Mouse position
+                Vector3 currPosition = OptionButtons[2].GetComponent<RectTransform>().position;
+                currPosition.x += (tapPosition.x - (currPosition.x + 120));
+
+                float xDifference = OptionButtons[2].transform.GetChild(1).position.x - OptionButtons[2].transform.GetChild(0).position.x;
+
+                float finaltapPosition = currPosition.x - OptionButtons[1].transform.GetChild(0).position.x;
+
+                float endValue = xDifference - finaltapPosition;
+                float endPercent = endValue / xDifference;
+                endValue = endPercent + 618;
+                endPercent = +endValue / 19;
+                OptionButtons[2].GetComponent<Slider>().value = endPercent * -1;
             }
             if (DSTapRouter.RectangleContainsDSPoint(OptionButtons[3].GetComponent<RectTransform>(), tapPosition))
             {
+                OptionsSetting(true);
                 _sliderActive = false;
+                SelectedButton = 3;
+                OptionsSetting(false);
                 bool _checkOn = OptionButtons[3].GetComponent<Toggle>().isOn;
                 _checkOn = !_checkOn;
                 OptionButtons[3].GetComponent<Toggle>().isOn = _checkOn;
@@ -83,28 +120,70 @@ public class MainMenu : MonoBehaviour, IDSTapListener
         }
         else if (_activeScreen == "Level")
         {
+            if (DSTapRouter.RectangleContainsDSPoint(LevelButtons[3].GetComponent<RectTransform>(), tapPosition))
+            {
+                if (PlayerPrefs.GetInt("NormalComplete", 0) == 1)
+                {
+                    SwitchScene(3);
+                }
+            }
+            if (DSTapRouter.RectangleContainsDSPoint(LevelButtons[2].GetComponent<RectTransform>(), tapPosition))
+            {
+                if (PlayerPrefs.GetInt("EasyComplete", 0) == 1)
+                {
+                    SwitchScene(2);
+                }
+            }
+            if (DSTapRouter.RectangleContainsDSPoint(LevelButtons[1].GetComponent<RectTransform>(), tapPosition))
+            {
+                SwitchScene(1);
+            }
             if (DSTapRouter.RectangleContainsDSPoint(LevelButtons[0].GetComponent<RectTransform>(), tapPosition))
             {
                 ButtonClickAudio.Play();
                 Back();
             }
-            if (DSTapRouter.RectangleContainsDSPoint(LevelButtons[1].GetComponent<RectTransform>(), tapPosition))
-            {
-                SwitchScene(1);    
-            }
-            if (DSTapRouter.RectangleContainsDSPoint(LevelButtons[2].GetComponent<RectTransform>(), tapPosition))
-            {
-                SwitchScene(2);
-            }
-            if (DSTapRouter.RectangleContainsDSPoint(LevelButtons[3].GetComponent<RectTransform>(), tapPosition))
-            {
-                SwitchScene(3);
-            }
         }
     }
 
     // Called when continously as Screen is dragged on
-    public void OnScreenDrag(Vector2 tapPosition) { }
+    public void OnScreenDrag(Vector2 tapPosition) 
+    {
+        if (_sliderActive && SelectedButton == 1)
+        {
+            // Gets Mouse position
+            Vector3 currPosition = OptionButtons[1].GetComponent<RectTransform>().position;
+            currPosition.x += (tapPosition.x - (currPosition.x + 120));
+
+            float xDifference = OptionButtons[1].transform.GetChild(1).position.x - OptionButtons[1].transform.GetChild(0).position.x;
+
+            float finaltapPosition = currPosition.x - OptionButtons[1].transform.GetChild(0).position.x;
+
+            float endValue = xDifference - finaltapPosition;
+            float endPercent = endValue / xDifference;
+            endValue = endPercent + 618;
+            endPercent = +endValue / 19;
+            OptionButtons[1].GetComponent<Slider>().value = endPercent * -1;
+            PlayerPrefs.SetFloat("MusicVolume", OptionButtons[1].GetComponent<Slider>().value);
+        }
+        else if (_sliderActive && SelectedButton == 2)
+        {
+            // Gets Mouse position
+            Vector3 currPosition = OptionButtons[2].GetComponent<RectTransform>().position;
+            currPosition.x += (tapPosition.x - (currPosition.x + 120));
+
+            float xDifference = OptionButtons[2].transform.GetChild(1).position.x - OptionButtons[2].transform.GetChild(0).position.x;
+
+            float finaltapPosition = currPosition.x - OptionButtons[2].transform.GetChild(0).position.x;
+
+            float endValue = xDifference - finaltapPosition;
+            float endPercent = endValue / xDifference;
+            endValue = endPercent + 618;
+            endPercent = +endValue / 19;
+            OptionButtons[2].GetComponent<Slider>().value = endPercent * -1;
+            PlayerPrefs.SetFloat("SFXVolume", OptionButtons[2].GetComponent<Slider>().value);
+        }
+    }
 
     // Called Once when the tap is lifted up from the Screen 
     public void OnScreenTapUp(Vector2 tapPosition) { }
@@ -136,7 +215,7 @@ public class MainMenu : MonoBehaviour, IDSTapListener
             {
                 if (_activeScreen == "Main")
                 {
-                    SetActiveButton(MenuButtons, 1f, 0);
+                    SetActiveButton(MenuButtons, 1f, 0, 1);
 
                 }
                 else if (_activeScreen == "Option")
@@ -145,15 +224,17 @@ public class MainMenu : MonoBehaviour, IDSTapListener
                 }
                 else if (_activeScreen == "Level")
                 {
-                    SetActiveButton(LevelButtons, 1f, 0);
-
+                    if (PlayerPrefs.GetInt("NormalComplete", 0) == 1) { SetActiveButton(LevelButtons, -1f, 3, 1); }
+                    else if (PlayerPrefs.GetInt("EasyComplete", 0) == 1) { SetActiveButton(LevelButtons, -1f, 2, 1); }
+                    else { SetActiveButton(LevelButtons, -1f, 1, 1); }
+ 
                 }
             }
             if (leftInput)
             {
                 if (_activeScreen == "Main")
                 {
-                    SetActiveButton(MenuButtons, -1f, MenuButtons.Count - 1);
+                    SetActiveButton(MenuButtons, -1f, MenuButtons.Count - 1, 1);
                 }
                 else if (_activeScreen == "Option")
                 {
@@ -161,7 +242,9 @@ public class MainMenu : MonoBehaviour, IDSTapListener
                 }
                 else if (_activeScreen == "Level")
                 {
-                    SetActiveButton(LevelButtons, -1f, LevelButtons.Count - 1);
+                    if (PlayerPrefs.GetInt("NormalComplete", 0) == 1) { SetActiveButton(LevelButtons, 1f, 0, 1); }
+                    else if (PlayerPrefs.GetInt("EasyComplete", 0) == 1) { SetActiveButton(LevelButtons, 1f, 0, 2); }
+                    else { SetActiveButton(LevelButtons, 1f, 0, 3); }
 
                 }
             }
@@ -214,16 +297,16 @@ public class MainMenu : MonoBehaviour, IDSTapListener
                 switch (SelectedButton)
                 {
                     case 0:
-                        SwitchScene(1);
+                        Back();
                         break;
                     case 1:
-                        SwitchScene(2);
+                        SwitchScene(1);
                         break;
                     case 2:
-                        SwitchScene(3);
+                        SwitchScene(2);
                         break;
                     case 3:
-                        Back();
+                        SwitchScene(3);
                         break;
                 }
             }
@@ -257,9 +340,9 @@ public class MainMenu : MonoBehaviour, IDSTapListener
         }
     }
 
-    void SetActiveButton(List<GameObject> Buttons, float ChangenNum, int ResetValue)
+    void SetActiveButton(List<GameObject> Buttons, float ChangenNum, int ResetValue, int LimitRangeNum)
     {
-        if (SelectedButton < Buttons.Count - 1 && SelectedButton >= 0 && ChangenNum > 0)
+        if (SelectedButton < Buttons.Count - LimitRangeNum && SelectedButton >= 0 && ChangenNum > 0)
         {
             Buttons[((int)SelectedButton)].GetComponent<Image>().color = Color.grey;
             SelectedButton += ChangenNum;
@@ -353,15 +436,11 @@ public class MainMenu : MonoBehaviour, IDSTapListener
 
     public void Back()
     {
-        _activeScreen = "Main";
-        Main.SetActive(true);
-        Level.SetActive(false);
-        Option.SetActive(false);
-        LevelButtons[((int)SelectedButton)].GetComponent<Image>().color = Color.white;
+        LevelButtons[((int)SelectedButton)].GetComponent<Image>().color = Color.grey;
 
         if(SelectedButton == 3)
         {
-            OptionButtons[((int)SelectedButton)].GetComponent<Toggle>().enabled = false;
+            OptionButtons[((int)SelectedButton)].GetComponent<Toggle>().enabled = true;
         }
         else if (SelectedButton == 0)
         {
@@ -369,8 +448,13 @@ public class MainMenu : MonoBehaviour, IDSTapListener
         }
         else
         {
-            OptionButtons[((int)SelectedButton)].GetComponent<Slider>().enabled = false;
+            OptionButtons[((int)SelectedButton)].GetComponent<Slider>().enabled = true;
         }
+
+        _activeScreen = "Main";
+        Main.SetActive(true);
+        Level.SetActive(false);
+        Option.SetActive(false);
 
         SelectedButton = 0;
         MenuButtons[((int)SelectedButton)].GetComponent<Image>().color = Color.white;

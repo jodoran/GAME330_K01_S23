@@ -9,9 +9,18 @@ public class NewBakingTask : MonoBehaviour, IDSTapListener
     public GameObject OvenOFF;
     public GameObject OvenON;
 
+    public AudioSource PlacingOnPlateSound;
+    public AudioSource OvenDoneSound;
+    public AudioSource MissSound;
+
     public Slider ProgressBar;
     public GameObject TaskManager;
-    public Text Instructions;
+
+    public Image Instructions;
+    public Sprite Step1;
+    public Sprite Step2;
+    public Sprite Step3;
+
     public Slider BakeTimeBar;
     public RectTransform Plate;
     public RectTransform Pan;
@@ -24,7 +33,11 @@ public class NewBakingTask : MonoBehaviour, IDSTapListener
 
     private void Start()
     {
-        Instructions.text = "Click to open the oven";
+        TaskNum = 1;
+        OvenOFF.SetActive(false);
+        OvenOPEN.SetActive(true);
+        Pan.gameObject.SetActive(true);
+        TaskNum++;
     }
 
     private void Update()
@@ -82,7 +95,6 @@ public class NewBakingTask : MonoBehaviour, IDSTapListener
     {
         if (TaskNum == 1)
         {
-            Instructions.text = "Drag the pan into the oven";
             OvenOFF.SetActive(false);
             OvenOPEN.SetActive(true);
             Pan.gameObject.SetActive(true);
@@ -96,7 +108,7 @@ public class NewBakingTask : MonoBehaviour, IDSTapListener
                 TaskNum++;
                 OvenON.SetActive(true);
                 OvenOPEN.SetActive(false);
-                Instructions.text = "Click when the line is in the green";
+                Instructions.sprite = Step1;
             }
         }
         else if (TaskNum == 3)
@@ -106,11 +118,17 @@ public class NewBakingTask : MonoBehaviour, IDSTapListener
             {
                 OvenON.SetActive(false);
                 OvenOFF.SetActive(true);
+                Instructions.sprite = Step2;
+                OvenDoneSound.Play();
                 TaskNum++;
-                Instructions.text = "Click to open the oven";
+                if (TaskManager.GetComponent<TaskManager>().HealingEnabled)
+                {
+                    ProgressBar.value += 0.05f;
+                }
             }
             else
             {
+                MissSound.Play();
                 ProgressBar.value -= 0.25f;
             }
         }
@@ -120,16 +138,16 @@ public class NewBakingTask : MonoBehaviour, IDSTapListener
             OvenOPEN.SetActive(true);
             Cake.gameObject.SetActive(true);
             Plate.gameObject.SetActive(true);
-            Instructions.text = "Drag the cake onto the plate";
+            Instructions.sprite = Step3;
             TaskNum++;
         }
         else if (TaskNum == 5)
         {
             if (rectOverlaps(Cake, Plate.GetComponent<RectTransform>()))
             {
+                PlacingOnPlateSound.Play();
                 Cake.gameObject.SetActive(false);
                 Plate.gameObject.SetActive(false);
-                Instructions.text = "";
                 TaskNum++;
                 OvenOFF.SetActive(true);
                 OvenOPEN.SetActive(false);

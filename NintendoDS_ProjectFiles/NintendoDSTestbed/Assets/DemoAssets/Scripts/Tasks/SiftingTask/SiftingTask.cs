@@ -7,6 +7,9 @@ public class SiftingTask : MonoBehaviour
 {
     public GameObject TaskManager;
     public Slider ProgressBar;
+    public AudioSource ShakeSound;
+    public AudioSource MissSound;
+
     public Slider TimeBar;
     public ParticleSystem PowderDispersalPaticleEffect;
     public float _spawnRadius;
@@ -20,6 +23,9 @@ public class SiftingTask : MonoBehaviour
 
     private int _clearCounter;
     private string _bumperKey = "Left";
+    private bool _shaking;
+    private float _timer;
+    private bool _started = false;
 
     private void Start()
     {
@@ -35,8 +41,20 @@ public class SiftingTask : MonoBehaviour
         {
             if(_bumperKey == "Left")
             {
+                if (!_started)
+                {
+                    _started = true;
+                }
+
                 Destroy(transform.GetChild(1).GetChild(0).gameObject);
                 Vector3 pos = gameObject.transform.localPosition;
+
+                if (!_shaking)
+                {
+                    _shaking = true;
+                    ShakeSound.Play();
+                }
+                _timer = 0;
 
                 Vector3 childPos = transform.GetChild(1).GetChild(0).localPosition;
                 childPos.z = 0;
@@ -51,6 +69,11 @@ public class SiftingTask : MonoBehaviour
                 if(TimeBar.value <= _timeBarSuccessMin)
                 {
                     ProgressBar.value -= 0.05f;
+                    MissSound.Play();
+                }
+                else if (TaskManager.GetComponent<TaskManager>().HealingEnabled)
+                {
+                    ProgressBar.value += 0.05f;
                 }
 
                 PowderDispersalPaticleEffect.Play();
@@ -63,8 +86,20 @@ public class SiftingTask : MonoBehaviour
         {
             if (_bumperKey == "Right")
             {
+                if (!_started)
+                {
+                    _started = true;
+                }
+
                 Destroy(transform.GetChild(1).GetChild(0).gameObject);
                 Vector3 pos = gameObject.transform.localPosition;
+
+                if (!_shaking)
+                {
+                    _shaking = true;
+                    ShakeSound.Play();
+                }
+                _timer = 0;
 
                 Vector3 childPos = transform.GetChild(1).GetChild(0).localPosition;
                 childPos.z = 0;
@@ -79,6 +114,11 @@ public class SiftingTask : MonoBehaviour
                 if (TimeBar.value <= _timeBarSuccessMin)
                 {
                     ProgressBar.value -= 0.05f;
+                    MissSound.Play();
+                }
+                else if (TaskManager.GetComponent<TaskManager>().HealingEnabled)
+                {
+                    ProgressBar.value += 0.05f;
                 }
 
                 PowderDispersalPaticleEffect.Play();
@@ -90,10 +130,24 @@ public class SiftingTask : MonoBehaviour
 
         if(_clearCounter >= _spawnCount)
         {
+            _shaking = false;
+            ShakeSound.Stop();
             TaskManager.GetComponent<TaskManager>().TaskComplete = true;
         }
 
-        TimeBar.value -= Time.deltaTime / _decreaseSpeed;
+        if (_started)
+        { TimeBar.value -= Time.deltaTime / _decreaseSpeed; }
+
+        if (_shaking)
+        {
+            _timer += Time.deltaTime;
+            if (_timer >= 3f)
+            {
+                ShakeSound.Stop();
+                _shaking = false;
+                _timer = 0;
+            }
+        }
     }
 
     void Spawner()

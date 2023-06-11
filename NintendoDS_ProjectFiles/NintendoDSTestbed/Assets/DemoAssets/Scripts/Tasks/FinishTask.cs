@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public class FinishTask : MonoBehaviour, IDSTapListener
 {
     public Slider ProgressBar;
+    public AudioSource WinSound;
+    public AudioSource LoseSound;
     public Text WinText;
     public RectTransform MenuButtonSuccess;
     public RectTransform MenuButtonFail;
@@ -23,7 +25,7 @@ public class FinishTask : MonoBehaviour, IDSTapListener
         {
             WinScreens[0].SetActive(true);
             WinScreens[1].SetActive(true);
-
+            WinSound.Play();
             if (ProgressBar.value >= 1) {
                 Stars[0].SetActive(true);
             }
@@ -42,6 +44,7 @@ public class FinishTask : MonoBehaviour, IDSTapListener
         }
         else
         {
+            WinSound.Stop();
             LoseScreens[0].SetActive(true);
             LoseScreens[1].SetActive(true);
         }
@@ -82,6 +85,6 @@ public class FinishTask : MonoBehaviour, IDSTapListener
     // Load Scene
     public void ChangeScene()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+        SceneManager.LoadScene(0);
     }
 }

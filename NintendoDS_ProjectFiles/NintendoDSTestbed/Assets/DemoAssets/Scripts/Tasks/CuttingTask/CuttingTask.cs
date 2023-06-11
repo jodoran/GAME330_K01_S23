@@ -19,6 +19,10 @@ public class CuttingTask : MonoBehaviour
     public Slider TaskProgressBar;
     public GameObject TaskManager;
 
+    public AudioSource CuttingSoundEffect1;
+    public AudioSource CuttingSoundEffect2;
+    public AudioSource FallSound;
+
     Dictionary<int, Keys> IngredientKeys = new Dictionary<int, Keys>();
 
     public Image ArrowSign;
@@ -39,6 +43,7 @@ public class CuttingTask : MonoBehaviour
     public int _totalIngredientsNeeded;
     public int _initSpawnCount = 3;
     public float _spawnDelay = 1;
+    public float _fallspeed;
 
     float _spawnTimer;
     float _totalSpawned;
@@ -63,21 +68,22 @@ public class CuttingTask : MonoBehaviour
         string _buttonInput = GetButtonInput();
         if (_cutIngredients < _totalSpawned - 1)
         {
-            if (Input.GetButton("Horizontal") || Input.GetButton("Vertical"))
+            if (Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical"))
             {
                 Keys x;
                 x.Arrow = null; x.Ingredient = null; x.Letter = null;
-                IngredientKeys.TryGetValue(_currentTask, out x);
-                print(x.Arrow.name);
-                if (_dpadInput == x.Arrow.name )
-                {
-                    _arrowButtonPress = true;
-                    ArrowSign.sprite = Checkmark;
-                    //StartCoroutine(SubHealthWaitTimer());
+                if(IngredientKeys.TryGetValue(_currentTask, out x)){
 
-                    if (_letterButtonPress && _arrowButtonPress)
+                    if (_dpadInput == x.Arrow.name)
                     {
-                        SetNewKey();
+                        _arrowButtonPress = true;
+                        ArrowSign.sprite = Checkmark;
+                        StartCoroutine(SubHealthWaitTimer());
+
+                        if (_letterButtonPress && _arrowButtonPress)
+                        {
+                            SetNewKey();
+                        }
                     }
                 }
             }
@@ -86,17 +92,18 @@ public class CuttingTask : MonoBehaviour
             {
                 Keys x;
                 x.Arrow = null; x.Ingredient = null; x.Letter = null;
-                IngredientKeys.TryGetValue(_currentTask, out x);
-                print(x.Letter.name);
-                if (_buttonInput == x.Letter.name)
+                if (IngredientKeys.TryGetValue(_currentTask, out x))
                 {
-                    _letterButtonPress = true;
-                    LetterSign.sprite = Checkmark;
-                    //StartCoroutine(SubHealthWaitTimer());
-
-                    if (_letterButtonPress && _arrowButtonPress)
+                    if (_buttonInput == x.Letter.name)
                     {
-                        SetNewKey();
+                        _letterButtonPress = true;
+                        LetterSign.sprite = Checkmark;
+                        StartCoroutine(SubHealthWaitTimer());
+
+                        if (_letterButtonPress && _arrowButtonPress)
+                        {
+                            SetNewKey();
+                        }
                     }
                 }
             }
@@ -166,10 +173,29 @@ public class CuttingTask : MonoBehaviour
         _key = IngredientKeys[_targetIngredient];
         while (_key.Ingredient == null)
         {
-            _key = IngredientKeys[_targetIngredient];
+            try
+            {
+                _key = IngredientKeys[_targetIngredient];
+            }
+            catch(KeyNotFoundException) { }
             yield return new WaitForSeconds(0.000001f);
         }
         _key.Health--;
+        if (_key.Health == 1)
+        {
+            CuttingSoundEffect1.Play();
+
+        }
+        else if (_key.Health == 0)
+        {
+            CuttingSoundEffect2.Play();
+        }
+
+        if (TaskManager.GetComponent<TaskManager>().HealingEnabled)
+        {
+            ProgressBar.value += 0.05f;
+        }
+
         _key.Ingredient.GetComponent<IngredientData>()._health = _key.Health;
         IngredientKeys[_targetIngredient] = _key;
     }
@@ -212,6 +238,7 @@ public class CuttingTask : MonoBehaviour
                 {
                     // Spawns object on top screen removing & destroying the old object from the active ingredients
                     // Spawns new object -> Removes old object from active list -> Destroys old object -> Removes objects assigned number from active ingredients numbers to reassign it to the new object
+                    FallSound.Play();
                     SpawnIngredient(SpawnBarTop);
                     ProgressBar.value -= 0.05f;
                     ActiveIngredients.RemoveAt(i);

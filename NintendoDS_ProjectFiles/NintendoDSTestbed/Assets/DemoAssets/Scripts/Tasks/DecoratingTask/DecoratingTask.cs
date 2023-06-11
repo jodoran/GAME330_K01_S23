@@ -54,7 +54,7 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
         }
         DrawIcingLineCheck();
 
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < Decorations.Count; i++)
         {
             DecorationChecks.Add(false);
         }
@@ -81,49 +81,18 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
         }
         else if(_currentStep == "Decorate")
         {
-            if (DSTapRouter.RectangleContainsDSPoint(Decorations[0], tapPosition))
+            for (int i = 0; i < Decorations.Count; i++)
             {
-                if (DecorationChecks[0] == false)
+                if (DSTapRouter.RectangleContainsDSPoint(Decorations[i], tapPosition))
                 {
-                    _originalPos = Decorations[0].anchoredPosition;
-                    MovePlateWithCursor(Decorations[0], tapPosition, 120, 90);
-                    _activeObjectNum = 0;
-                }
-            }
-            if (DSTapRouter.RectangleContainsDSPoint(Decorations[1], tapPosition))
-            {
-                if (DecorationChecks[1] == false)
-                {
-                    _originalPos = Decorations[1].anchoredPosition;
-                    MovePlateWithCursor(Decorations[1], tapPosition, 120, 90);
-                    _activeObjectNum = 1;
-                }
-            }
-            if (DSTapRouter.RectangleContainsDSPoint(Decorations[2], tapPosition))
-            {
-                if (DecorationChecks[2] == false)
-                {
-                    _originalPos = Decorations[2].anchoredPosition;
-                    MovePlateWithCursor(Decorations[2], tapPosition, 120, 90);
-                    _activeObjectNum = 2;
-                }
-            }
-            if (DSTapRouter.RectangleContainsDSPoint(Decorations[3], tapPosition))
-            {
-                if (DecorationChecks[3] == false)
-                {
-                    _originalPos = Decorations[3].anchoredPosition;
-                    MovePlateWithCursor(Decorations[3], tapPosition, 120, 90);
-                    _activeObjectNum = 3;
-                }
-            }
-            if (DSTapRouter.RectangleContainsDSPoint(Decorations[4], tapPosition))
-            {
-                if (DecorationChecks[4] == false)
-                {
-                    _originalPos = Decorations[4].anchoredPosition;
-                    MovePlateWithCursor(Decorations[4], tapPosition, 120, 90);
-                    _activeObjectNum = 4;
+                    if (DecorationChecks[i] == false)
+                    {
+                        _originalPos = Decorations[i].anchoredPosition;
+                        DecorationPlacements[i].GetComponent<Image>().color = Color.grey;
+                        MovePlateWithCursor(Decorations[i], tapPosition, 120, 90);
+                        _activeObjectNum = i;
+                        print(i);
+                    }
                 }
             }
         }
@@ -154,6 +123,7 @@ public class DecoratingTask : MonoBehaviour, IDSTapListener
         {
             if (rectOverlaps(Decorations[_activeObjectNum], DecorationPlacements[_activeObjectNum]))
             {
+                DecorationPlacements[_activeObjectNum].GetComponent<Image>().color = Color.black;
                 DecorationChecks[_activeObjectNum] = true;
             }
             else if (rectOverlaps(Decorations[_activeObjectNum], Cake.GetComponent<RectTransform>()))

@@ -10,24 +10,55 @@ public struct Task
     public GameObject BottomScreen;
 }
 
-public class TaskManager : MonoBehaviour
+public class TaskManager : MonoBehaviour, IDSTapListener
 {
+    public bool FailEnabled;
+    public bool HealingEnabled;
+
     public List<Task> Tasks;
     public List<GameObject> Stars;
     public Slider ProgressBar;
+
     public GameObject MainAudioTrack;
+    public GameObject IntermissionScreen;
+
     [HideInInspector]
     public bool TaskComplete;
     [HideInInspector]
     public float Timer;
+
+    public string LevelDifficulty;
+    private bool WaitingForInteraction;
     private int TaskNum = 0;
 
     private void Start()
     {
         ProgressBar.gameObject.SetActive(true);
         Tasks[TaskNum].TopScreen.SetActive(true);
-        Tasks[TaskNum].BottomScreen.SetActive(true);
+        IntermissionScreen.SetActive(true);
+        WaitingForInteraction = true;
     }
+
+    public void OnScreenTapDown(Vector2 tapPosition)
+    {
+        if (WaitingForInteraction)
+        {
+            Tasks[TaskNum].BottomScreen.SetActive(true);
+
+            if (TaskNum >= Tasks.Count - 1)
+            {
+                MainAudioTrack.SetActive(false);
+                PlayerPrefs.SetInt(LevelDifficulty + "Complete", 1);
+            }
+            WaitingForInteraction = false;
+            IntermissionScreen.SetActive(false);
+        }
+    }
+
+    public void OnScreenDrag(Vector2 tapPosition) { }
+
+    public void OnScreenTapUp(Vector2 tapPosition) { }
+
 
     public void ChangeTask()
     {
@@ -35,12 +66,8 @@ public class TaskManager : MonoBehaviour
         Tasks[TaskNum].BottomScreen.SetActive(false);
         TaskNum++;
         Tasks[TaskNum].TopScreen.SetActive(true);
-        Tasks[TaskNum].BottomScreen.SetActive(true);
-
-        if(TaskNum >= Tasks.Count)
-        {
-            MainAudioTrack.SetActive(false);
-        }
+        IntermissionScreen.SetActive(true);
+        WaitingForInteraction = true;
     }
 
     public void JumpToEnd()
@@ -92,7 +119,28 @@ public class TaskManager : MonoBehaviour
         }
         else
         {
-            JumpToEnd();
+            if (FailEnabled)
+            {
+                JumpToEnd();
+            }
+        }
+
+        if (WaitingForInteraction)
+        {
+            if (Input.anyKeyDown)
+            {
+                Tasks[TaskNum].BottomScreen.SetActive(true);
+
+                if (TaskNum >= Tasks.Count)
+                {
+                    MainAudioTrack.SetActive(false);
+                }
+                else
+                {
+                    WaitingForInteraction = false;
+                    IntermissionScreen.SetActive(false);
+                }
+            }
         }
     }
 }

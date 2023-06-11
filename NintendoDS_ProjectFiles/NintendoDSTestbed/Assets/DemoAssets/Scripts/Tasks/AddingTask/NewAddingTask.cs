@@ -11,6 +11,10 @@ public class NewAddingTask : MonoBehaviour, IDSTapListener
     public Slider TaskProgressBar;
     public GameObject TaskManager;
 
+    public AudioSource CollectSound;
+    public AudioSource BadSound;
+    public AudioSource FallSound;
+
     public RectTransform PadModeButton;
     public RectTransform CursorModeButton;
     public Image Bowl;
@@ -129,10 +133,14 @@ public class NewAddingTask : MonoBehaviour, IDSTapListener
             }
             else if (_ingedient.localPosition.y <= -110 && _ingedient.parent == DespawnBarBottom.parent)
             {
+                if (_ingedient.GetComponent<IngredientGravity>().GoodOrBad) {
+                    ProgressBar.value -= 0.05f;
+                    FallSound.Play();
+                }
+
                 Destroy(ActiveIngredients[i]);
                 ActiveIngredients.RemoveAt(i);
                 SpawnIngredient(SpawnBarTop);
-                ProgressBar.value -= 0.05f;
             }
         }
     }
@@ -143,10 +151,11 @@ public class NewAddingTask : MonoBehaviour, IDSTapListener
         float _minX = Bar.GetChild(1).position.x;
 
         float x = UnityEngine.Random.Range(_minX, _maxX);
-        int _indgredientNum = UnityEngine.Random.Range(0, IngredientCatalog.Count);
+        int _ingredientNum = UnityEngine.Random.Range(0, IngredientCatalog.Count);
 
-        GameObject _ingredient = IngredientCatalog[_indgredientNum];
+        GameObject _ingredient = IngredientCatalog[_ingredientNum];
         GameObject _spawnObject = Instantiate(_ingredient, new Vector3(x, Bar.transform.position.y, 0), Quaternion.identity, Bar.parent);
+        _spawnObject.GetComponent<IngredientGravity>()._ingredientNum = _ingredientNum;
 
         ActiveIngredients.Add(_spawnObject);
     }
@@ -157,9 +166,9 @@ public class NewAddingTask : MonoBehaviour, IDSTapListener
         float _minX = Bar.GetChild(1).position.x;
 
         float x = Ingredient.localPosition.x;
-        int _indgredientNum = Ingredient.GetComponent<IngredientGravity>()._ingredientNum;
+        int _ingredientNum = Ingredient.GetComponent<IngredientGravity>()._ingredientNum;
 
-        GameObject _ingredient = IngredientCatalog[_indgredientNum];
+        GameObject _ingredient = IngredientCatalog[_ingredientNum];
         GameObject _spawnObject = Instantiate(_ingredient, new Vector3(x, Bar.transform.position.y, 1), Quaternion.identity, Bar.parent);
         _spawnObject.transform.localPosition = new Vector3(x, _spawnObject.transform.localPosition.y, 1);
         _spawnObject.GetComponent<IngredientGravity>().Source = gameObject;
@@ -167,12 +176,25 @@ public class NewAddingTask : MonoBehaviour, IDSTapListener
         ActiveIngredients.Add(_spawnObject);
     }
 
-    public void IngredientEnterBowl(GameObject _ingredient)
+    public void IngredientEnterBowl(GameObject _ingredient, bool GoodORBad)
     {
         Destroy(_ingredient);
+        if (GoodORBad)
+        {
+            CollectSound.Play();
+            TaskProgressBar.value += 1f / _totalIngredientsNeeded;
+            if (TaskManager.GetComponent<TaskManager>().HealingEnabled)
+            {
+                ProgressBar.value += 0.05f;
+            }
+        }
+        else
+        {
+            BadSound.Play();
+        }
         ActiveIngredients.Remove(_ingredient);
         SpawnIngredient(SpawnBarTop);
-        TaskProgressBar.value += 1f/_totalIngredientsNeeded;
+
     }
 
     void MovePlateWithCursor(RectTransform plate, Vector3 cursorPosition, float Xoffset) //Sets plate to position of the cursor
