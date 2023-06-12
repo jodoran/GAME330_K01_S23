@@ -99,9 +99,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gravity: 3
-  _ingredientNum: 2
+  _ingredientNum: 4
   Source: {fileID: 0}
-  GoodOrBad: 0
+  GoodOrBad: 1
 --- !u!58 &-698024155203599374
 CircleCollider2D:
   m_ObjectHideFlags: 0

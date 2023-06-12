@@ -65,9 +65,18 @@ public class TaskManager : MonoBehaviour, IDSTapListener
         Tasks[TaskNum].TopScreen.SetActive(false);
         Tasks[TaskNum].BottomScreen.SetActive(false);
         TaskNum++;
-        Tasks[TaskNum].TopScreen.SetActive(true);
-        IntermissionScreen.SetActive(true);
-        WaitingForInteraction = true;
+            Tasks[TaskNum].TopScreen.SetActive(true);
+        if (TaskNum < Tasks.Count - 1)
+        {
+            IntermissionScreen.SetActive(true);
+            WaitingForInteraction = true;
+        }
+        else
+        {
+            Tasks[TaskNum].BottomScreen.SetActive(true);
+            MainAudioTrack.SetActive(false);
+            PlayerPrefs.SetInt(LevelDifficulty + "Complete", 1);
+        }
     }
 
     public void JumpToEnd()
@@ -131,15 +140,9 @@ public class TaskManager : MonoBehaviour, IDSTapListener
             {
                 Tasks[TaskNum].BottomScreen.SetActive(true);
 
-                if (TaskNum >= Tasks.Count)
-                {
-                    MainAudioTrack.SetActive(false);
-                }
-                else
-                {
-                    WaitingForInteraction = false;
-                    IntermissionScreen.SetActive(false);
-                }
+                WaitingForInteraction = false;
+                IntermissionScreen.SetActive(false);
+
             }
         }
     }

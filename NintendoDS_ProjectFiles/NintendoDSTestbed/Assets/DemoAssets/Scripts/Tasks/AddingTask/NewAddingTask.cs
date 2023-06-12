@@ -134,7 +134,6 @@ public class NewAddingTask : MonoBehaviour, IDSTapListener
             else if (_ingedient.localPosition.y <= -110 && _ingedient.parent == DespawnBarBottom.parent)
             {
                 if (_ingedient.GetComponent<IngredientGravity>().GoodOrBad) {
-                    ProgressBar.value -= 0.05f;
                     FallSound.Play();
                 }
 
@@ -190,6 +189,7 @@ public class NewAddingTask : MonoBehaviour, IDSTapListener
         }
         else
         {
+            ProgressBar.value -= 0.05f;
             BadSound.Play();
         }
         ActiveIngredients.Remove(_ingredient);

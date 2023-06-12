@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gravity: 5
-  _ingredientNum: 2
+  _ingredientNum: 5
   Source: {fileID: 0}
   GoodOrBad: 1
 --- !u!58 &-698024155203599374

@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class FinishTask : MonoBehaviour, IDSTapListener
 {
+    public int LevelNumber;
     public Slider ProgressBar;
     public AudioSource WinSound;
     public AudioSource LoseSound;
@@ -28,14 +29,20 @@ public class FinishTask : MonoBehaviour, IDSTapListener
             WinSound.Play();
             if (ProgressBar.value >= 1) {
                 Stars[0].SetActive(true);
+                Stars[1].SetActive(true);
+                Stars[2].SetActive(true);
+                PlayerPrefs.SetInt(LevelNumber + "Stars", 3);
             }
-            if (ProgressBar.value >= .75f)
+            else if (ProgressBar.value >= .75f)
             {
                 Stars[1].SetActive(true);
+                Stars[2].SetActive(true);
+                PlayerPrefs.SetInt(LevelNumber + "Stars", 2);
             }
-            if (ProgressBar.value >= .35f)
+            else if (ProgressBar.value >= .35f)
             {
                 Stars[2].SetActive(true);
+                PlayerPrefs.SetInt(LevelNumber + "Stars", 1);
             }
 
             float time = GameObject.Find("TaskManager").GetComponent<TaskManager>().Timer;

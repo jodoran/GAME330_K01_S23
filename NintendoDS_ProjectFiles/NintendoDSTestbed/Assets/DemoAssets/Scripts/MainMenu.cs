@@ -11,13 +11,16 @@ public class MainMenu : MonoBehaviour, IDSTapListener
     public List<GameObject> MenuButtons;
     public List<GameObject> OptionButtons;
     public List<GameObject> LevelButtons;
+    public List<GameObject> LevelStars;
+    public GameObject ControlMenu;
+    public GameObject CreditMenu;
 
     private GameObject Main;
     private GameObject Option;
     private GameObject Level;
 
     float SelectedButton = 0;
-    string _activeScreen = "Main";
+    string _activeScreen = "CreditMenu";
     bool _sliderActive = false;
 
     private void Start()
@@ -32,6 +35,7 @@ public class MainMenu : MonoBehaviour, IDSTapListener
         if (PlayerPrefs.GetInt("NormalComplete", 0) == 1) { LevelButtons[3].SetActive(true); }
         if (PlayerPrefs.GetInt("EasyComplete", 0) == 1) { LevelButtons[2].SetActive(true); }
 
+        StartCoroutine(SwitchOffCredits());
     }
 
     // Called Once when Screen is tapped down on
@@ -117,6 +121,16 @@ public class MainMenu : MonoBehaviour, IDSTapListener
                 if (_checkOn == true) { PlayerPrefs.SetInt("AudioToggle", 1); }
                 else { PlayerPrefs.SetInt("AudioToggle", 0); }
             }
+        }
+        else if (_activeScreen == "ControlMenu")
+        {
+            LevelSelectSwitch();
+        }
+        else if (_activeScreen == "CreditMenu")
+        {
+            _activeScreen = "Main";
+            CreditMenu.SetActive(false);
+            Main.SetActive(true);
         }
         else if (_activeScreen == "Level")
         {
@@ -215,8 +229,7 @@ public class MainMenu : MonoBehaviour, IDSTapListener
             {
                 if (_activeScreen == "Main")
                 {
-                    SetActiveButton(MenuButtons, 1f, 0, 1);
-
+                    SetActiveButton(MenuButtons, -1f, MenuButtons.Count - 1, 1);
                 }
                 else if (_activeScreen == "Option")
                 {
@@ -224,17 +237,16 @@ public class MainMenu : MonoBehaviour, IDSTapListener
                 }
                 else if (_activeScreen == "Level")
                 {
-                    if (PlayerPrefs.GetInt("NormalComplete", 0) == 1) { SetActiveButton(LevelButtons, -1f, 3, 1); }
-                    else if (PlayerPrefs.GetInt("EasyComplete", 0) == 1) { SetActiveButton(LevelButtons, -1f, 2, 1); }
-                    else { SetActiveButton(LevelButtons, -1f, 1, 1); }
- 
+                    if (PlayerPrefs.GetInt("NormalComplete", 0) == 1) { SetActiveButton(LevelButtons, 1f, 0, 1); }
+                    else if (PlayerPrefs.GetInt("EasyComplete", 0) == 1) { SetActiveButton(LevelButtons, 1f, 0, 2); }
+                    else { SetActiveButton(LevelButtons, 1f, 0, 3); }
                 }
             }
             if (leftInput)
             {
                 if (_activeScreen == "Main")
                 {
-                    SetActiveButton(MenuButtons, -1f, MenuButtons.Count - 1, 1);
+                    SetActiveButton(MenuButtons, 1f, 0, 1);
                 }
                 else if (_activeScreen == "Option")
                 {
@@ -242,10 +254,9 @@ public class MainMenu : MonoBehaviour, IDSTapListener
                 }
                 else if (_activeScreen == "Level")
                 {
-                    if (PlayerPrefs.GetInt("NormalComplete", 0) == 1) { SetActiveButton(LevelButtons, 1f, 0, 1); }
-                    else if (PlayerPrefs.GetInt("EasyComplete", 0) == 1) { SetActiveButton(LevelButtons, 1f, 0, 2); }
-                    else { SetActiveButton(LevelButtons, 1f, 0, 3); }
-
+                    if (PlayerPrefs.GetInt("NormalComplete", 0) == 1) { SetActiveButton(LevelButtons, -1f, 3, 1); }
+                    else if (PlayerPrefs.GetInt("EasyComplete", 0) == 1) { SetActiveButton(LevelButtons, -1f, 2, 1); }
+                    else { SetActiveButton(LevelButtons, -1f, 1, 1); }
                 }
             }
         }
@@ -292,6 +303,10 @@ public class MainMenu : MonoBehaviour, IDSTapListener
                         break;
                 }
             }
+            else if (_activeScreen == "ControlMenu")
+            {
+                LevelSelectSwitch();
+            }
             else if (_activeScreen == "Level")
             {
                 switch (SelectedButton)
@@ -309,6 +324,15 @@ public class MainMenu : MonoBehaviour, IDSTapListener
                         SwitchScene(3);
                         break;
                 }
+            }
+        }
+        if (Input.anyKeyDown)
+        {
+            if (_activeScreen == "CreditMenu")
+            {
+                _activeScreen = "Main";
+                CreditMenu.SetActive(false);
+                Main.SetActive(true);
             }
         }
     }
@@ -360,6 +384,17 @@ public class MainMenu : MonoBehaviour, IDSTapListener
             SelectedButton = ResetValue;
             Buttons[((int)SelectedButton)].GetComponent<Image>().color = Color.white;
         }
+
+        if ((int)SelectedButton != 0 && _activeScreen == "Level")
+        {
+            SetLevelStars((int)SelectedButton);
+        }
+        else if (_activeScreen == "Level")
+        {
+            LevelStars[0].SetActive(false);
+            LevelStars[1].SetActive(false);
+            LevelStars[2].SetActive(false);
+        }
     }
 
     void SetActiveOption(float ChangenNum, int ResetValue)
@@ -407,6 +442,46 @@ public class MainMenu : MonoBehaviour, IDSTapListener
         }
     }
 
+    void SetLevelStars(int LevelNum)
+    {
+        int StarsComplete = PlayerPrefs.GetInt(LevelNum + "Stars", 0);
+        if(StarsComplete >= 1)
+        {
+            LevelStars[0].SetActive(true);
+        }
+        else
+        {
+            LevelStars[0].SetActive(false);
+        }
+        if (StarsComplete >= 2)
+        {
+            LevelStars[1].SetActive(true);
+        }
+        else
+        {
+            LevelStars[1].SetActive(false);
+        }
+        if (StarsComplete >= 3)
+        {
+            LevelStars[2].SetActive(true);
+        }
+        else
+        {
+            LevelStars[2].SetActive(false);
+        }
+    }
+
+    IEnumerator SwitchOffCredits()
+    {
+        yield return new WaitForSeconds(3f);
+        if(_activeScreen == "CreditMenu")
+        {
+            _activeScreen = "Main";
+            CreditMenu.SetActive(false);
+            Main.SetActive(true);
+        }
+    }
+
     void LoadOptions()
     {
         OptionButtons[1].GetComponent<Slider>().value = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
@@ -418,11 +493,21 @@ public class MainMenu : MonoBehaviour, IDSTapListener
 
     public void Play()
     {
-        _activeScreen = "Level";
+        _activeScreen = "ControlMenu";
         Main.SetActive(false);
-        Level.SetActive(true);
+        ControlMenu.SetActive(true);
         MenuButtons[((int)SelectedButton)].GetComponent<Image>().color = Color.grey;
+    }
+
+    public void LevelSelectSwitch()
+    {
+        _activeScreen = "Level";
+        ControlMenu.SetActive(false);
+        Level.SetActive(true);
         LevelButtons[((int)SelectedButton)].GetComponent<Image>().color = Color.white;
+        LevelStars[0].SetActive(false);
+        LevelStars[1].SetActive(false);
+        LevelStars[2].SetActive(false);
     }
 
     public void OpenOptionsMenu()
