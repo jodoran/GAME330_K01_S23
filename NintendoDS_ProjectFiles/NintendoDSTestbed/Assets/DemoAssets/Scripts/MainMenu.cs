@@ -215,15 +215,20 @@ public class MainMenu : MonoBehaviour, IDSTapListener
         }
     }
 
+    bool down = false;
     void ButtonMovementSystem()
     {
         float axisValue = Input.GetAxisRaw("Horizontal");
+        print(axisValue);
         bool rightInput = false;
         bool leftInput = false;
         rightInput = axisValue > 0.1f;
         leftInput = axisValue < -0.1f;
+        
 
-        if (Input.GetButtonDown("Horizontal"))
+        
+
+        if (Input.GetButtonDown("Horizontal") || (!down && (rightInput || leftInput)))
         {
             if (rightInput)
             {
@@ -260,6 +265,15 @@ public class MainMenu : MonoBehaviour, IDSTapListener
                 }
             }
         }
+        if (rightInput || leftInput)
+        {
+            down = true;
+        }
+        else
+        {
+            down = false;
+        }
+
     }
 
     void ButtonInvokes()
@@ -345,15 +359,15 @@ public class MainMenu : MonoBehaviour, IDSTapListener
         rightInput = axisValue > 0.1f;
         leftInput = axisValue < -0.1f;
         yield return new WaitForSeconds(0.1f);
-        if (Input.GetButton("Horizontal"))
+        if (Input.GetButton("Horizontal") || (rightInput || leftInput))
         {
             if (rightInput)
             {
-                ActiveSlider.value += 0.01f;
+                ActiveSlider.value += 0.001f;
             }
             if (leftInput)
             {
-                ActiveSlider.value -= 0.01f;
+                ActiveSlider.value -= 0.001f;
             }
             PlayerPrefs.SetFloat(ActiveSlider.name, ActiveSlider.value);
         }

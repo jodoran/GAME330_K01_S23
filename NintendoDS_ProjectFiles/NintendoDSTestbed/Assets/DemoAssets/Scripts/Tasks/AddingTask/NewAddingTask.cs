@@ -34,7 +34,7 @@ public class NewAddingTask : MonoBehaviour, IDSTapListener
     public int _initSpawnCount = 3;
     public float _spawnDelay = 1;
 
-    bool CursorMode = false;
+    bool CursorMode = true;
     bool PadMode = true;
     float _bowlX = 0;
     float _spawnTimer;
@@ -44,6 +44,7 @@ public class NewAddingTask : MonoBehaviour, IDSTapListener
         SpawnIngredient(SpawnBarTop);
         _initSpawnCount--;
     }
+
 
     public void Update()
     {
@@ -55,7 +56,7 @@ public class NewAddingTask : MonoBehaviour, IDSTapListener
             rightInput = axisValue > 0.1f;
             leftInput = axisValue < -0.1f;
 
-            if (Input.GetButton("Horizontal"))
+            if (Input.GetButton("Horizontal") || (rightInput || leftInput))
             {
                 if (rightInput && _bowlX < _bowlBounds)
                 {

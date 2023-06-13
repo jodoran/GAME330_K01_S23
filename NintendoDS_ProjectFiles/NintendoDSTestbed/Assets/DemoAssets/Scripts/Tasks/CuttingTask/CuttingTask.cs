@@ -62,13 +62,18 @@ public class CuttingTask : MonoBehaviour
         SwitchButtonSigns();
     }
 
+    bool down = false;
     public void Update()
     {
         string _dpadInput = CheckDpadInput();
         string _buttonInput = GetButtonInput();
+
+
         if (_cutIngredients < _totalSpawned - 1)
         {
-            if (Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical"))
+            float _horizontalAxisValue = Input.GetAxisRaw("Horizontal");
+            float _verticalAxisValue = Input.GetAxisRaw("Vertical");
+            if (Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical") || (!down && (_horizontalAxisValue != 0 || _verticalAxisValue != 0)))
             {
                 Keys x;
                 x.Arrow = null; x.Ingredient = null; x.Letter = null;
@@ -86,6 +91,14 @@ public class CuttingTask : MonoBehaviour
                         }
                     }
                 }
+            }
+            if (_horizontalAxisValue != 0 || _verticalAxisValue != 0)
+            {
+                down = true;
+            }
+            else
+            {
+                down = false;
             }
 
             if (Input.anyKeyDown)
